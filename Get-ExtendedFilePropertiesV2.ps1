@@ -1,4 +1,18 @@
-Function Get-FileExtension([string]$Path){$P = $Path.Split('.'); return "$('.' + $P[$P.Count -1])"}
+Function Get-FileExtension([string]$Path){
+    
+    $P = $Path.Split('.')
+    
+    Switch ($P.Count){
+
+        {$_ -ge 2}{return "$('.' + $P[$P.Count -1])"}
+    
+        {$_ le 1} {return $null}
+
+        Default {return $null}
+
+    } #Close switch
+
+    } #Close Function
 
 Function Get-Files ($Directory,[switch]$ExcludeFullPath){
 
@@ -21,8 +35,6 @@ If ($ExcludeFullPath.IsPresent -and $FilesNormalized.Count -ne 0){
 Return $FilesNormalized
 
 } #Close Function
-
-#Function Get-StringHash ($String){Return (Get-FileHash -InputStream ([IO.MemoryStream]::new([byte[]][char[]]$String)) -Algorithm SHA1).Hash}
 
 Function Get-Directories ($Directory){
     $Dirs = New-Object System.Collections.ArrayList
