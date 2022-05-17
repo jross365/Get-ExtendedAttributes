@@ -6,7 +6,7 @@ Function Get-FileExtension([string]$Path){
 
         {$_ -ge 2}{return "$('.' + $P[$P.Count -1])"}
     
-        {$_ le 1} {return $null}
+        {$_ le 1} {throw "No extension found in $Path"}
 
         Default {return $null}
 
@@ -34,7 +34,7 @@ If ($ExcludeFullPath.IsPresent -and $FilesNormalized.Count -ne 0){
 
 Return $FilesNormalized
 
-} #Close Function
+}
 
 Function Get-Directories ($Directory){
     $Dirs = New-Object System.Collections.ArrayList
@@ -164,12 +164,14 @@ If ($UseHelperFile.IsPresent){
                     
                     [System.Collections.ArrayList]$HelperAttrs = $_.Attrs
                     $NoValueAttrs.ForEach({$HelperAttrs.Remove($_)}) #Remove "No-Value Attributes"
-                    $HelperHash.Add(($_.Extension),($_.Attrs))
+                    $HelperHash.Add(($_.Extension),$HelperAttrs)
     
                 })
 
     Remove-Variable JSON -ErrorAction SilentlyContinue
     &$ReclaimMemory
+
+  #endregion
 
 } #Close If UseHelper.IsPresent
 
@@ -276,10 +278,33 @@ $Files.ForEach({
 
 end {
     
+    #region Report errors and remove error entries from results:
+    #!!!THIS IS NOT WORKING PROPERLY, NEED TO DIG INTO IT
+    (0..($Results.Count -1)).ForEach({
+    
+    $Index = $_
+
+    If ($Results[$Index].psobject.Properties.Where({$_.MemberType -eq "NoteProperty"}).Count -eq 0){
+    
+    Write-Error "$($Results[$Index].ErrorRecord)"
+    
+    $ErrorResult = $Results[$Index]
+
+    $Results.Remove($ErrorResult)
+
+    } 
+
+    })
+
+    &$ReclaimMemory
+
+    #endregion Report errors
+
     #region Filter out unused properties
-If ($ReduceDown.IsPresent){
+If ($ReduceDown.IsPresent){ #!!!THIS NEEDS SUBSTANTIALLY IMPROVED/OPTIMIZED
+           
         $PropertiesHash = @{}
-        $Properties = $Results[0].psobject.Properties.Name
+        $Properties = $Results | Get-Member
         $Properties.ForEach({$PropertiesHash.Add($_,0)})
         $UsedProperties = New-Object System.Collections.ArrayList
 
