@@ -1,12 +1,12 @@
-Function Get-FileExtension([string]$Path){
+Function Get-FileExtension([string]$FilePath){
     
-    $P = $Path.Split('.')
+    $P = $FilePath.Split('.')
     
     Switch ($P.Count){
 
         {$_ -ge 2}{return "$('.' + $P[$P.Count -1])"}
     
-        {$_ le 1} {throw "No extension found in $Path"}
+        #{$_ -le 1} {throw "No extension found in $FilePath"}
 
         Default {return $null}
 
@@ -20,7 +20,7 @@ Try {$Files = [System.IO.Directory]::EnumerateFiles("$Directory","*.*","TopDirec
 Catch {$_.Exception; Continue}
 
 $FilesNormalized = New-Object System.Collections.ArrayList
-$Files.Where({$_ -notmatch 'db'}).ForEach({$FilesNormalized.Add($_) | Out-Null})
+$Files.Where({$_ -notmatch 'thumbs.db'}).ForEach({$FilesNormalized.Add($_) | Out-Null})
 
 If ($ExcludeFullPath.IsPresent -and $FilesNormalized.Count -ne 0){ 
     
@@ -97,7 +97,10 @@ param(
     [Parameter(ParameterSetName='HelperFile',Mandatory=$False)] [string]$HelperFilename="exthelper.json",
     [Parameter(Mandatory=$False)][array]$FilterOut,
     [Parameter(Mandatory=$False)][array]$IncludeOnly,
-    [Parameter(Mandatory=$False)][switch]$ReduceDown
+    [Parameter(Mandatory=$False)][switch]$ReduceDown,
+    [Parameter(Mandatory=$False)][switch]$ReportAccessErrors,
+    [Parameter(Mandatory=$False)][switch]$ErrorsToFile,
+    [Parameter(Mandatory=$False)][string]$ErrorOutFile
 )
 
 begin {
@@ -246,7 +249,7 @@ $Files.ForEach({
 
     $True {
 
-          $FileAttrs = $HelperHash."$(Get-FileExtension -Path $File)"
+          $FileAttrs = $HelperHash."$(Get-FileExtension -FilePath $File)"
 
           If ($FileAttrs.Count -gt 0){$TargetColumns = $FileAttrs}
           Else {$TargetColumns = $ValidColumns}
@@ -279,7 +282,44 @@ $Files.ForEach({
 end {
     
     #region Report errors and remove error entries from results:
-    #!!!THIS IS NOT WORKING PROPERLY, NEED TO DIG INTO IT
+    #!!!THIS IS STIL NOT WORKING PROPERLY, NEED TO CONTINUE TO WORK ON IT - NOT REPORTING OUT ERRORS TO CONSOLE
+    #$Files[0].ErrorRecord.Exception.Message
+    
+    #Report Exceptions, if specified
+    If ($ReportAccessErrors.IsPresent){
+         
+        $Exceptions = $Results.Where({$_.GetType().Name -notmatch "Object"}).InnerException.Message
+        
+        If ($ErrorsToFile.IsPresent -and $Exceptions.count -gt 0){
+
+        $ErrorOutFileError = $False
+        Switch ((Test-Path $ErrorOutFile)){
+
+        $True {
+                Try {$Exceptions | Out-File -Append $ErrorOutFile -ErrorAction Stop}
+                Catch {$ErrorOutFileError = $True}
+        }
+
+        $False {
+
+            Try {$Exceptions | Out-File $ErrorOutFile -ErrorAction Stop}
+            Catch {$ErrorOutFileError = $True}
+
+        }
+
+        } #Close Switch
+
+        If ($ErrorOutFileError -eq $True){Write-Host "Could not append errors to $ErrorOutFile, writing to console" -ForegroundColor Yellow; $Exceptions.ForEach({Write-Host "$_"})}
+     
+    } #Close if ErrorsToFile is present
+
+    If (!($ErrorsToFile.IsPresent) -and $Exceptions.count -gt 0){$Exceptions.ForEach({Write-Host "$_"})}
+
+} #Close if $ReportAccessErrors.IsPresent
+
+    #Remove all error entries from Results and sort by path | #THIS STILL ISN'T WORKING
+    $Results = $Results.Where({$_.GetType().Name -imatch "Object"}) | Sort-Object -Property Path
+    
     (0..($Results.Count -1)).ForEach({
     
     $Index = $_
