@@ -17,7 +17,8 @@ Function Get-FileExtension([string]$FilePath){
 Function Get-Files ($Directory,[switch]$ExcludeFullPath){
 
 Try {$Files = [System.IO.Directory]::EnumerateFiles("$Directory","*.*","TopDirectoryOnly")}
-Catch {$_.Exception; Continue}
+Catch {throw "$($_.Exception.Message)"} #Changed this because we're not leaning on recursion in this case
+#Catch {Write-Error "$($_.Exception.Message)"; Continue}
 
 $FilesNormalized = New-Object System.Collections.ArrayList
 $Files.Where({$_ -notmatch 'thumbs.db'}).ForEach({$FilesNormalized.Add($_) | Out-Null})
@@ -187,14 +188,22 @@ Process {
 #region Build Directory/File Hashtable
 
 $DirIndex = @{}
+$ErrorDirs = New-Object System.Collections.ArrayList # To store
 
 $DirIndex.Add("$Path",(Get-Files -Directory $Path -ExcludeFullPath))
+
+
 
 If ($Recurse.IsPresent){
     
       $SubDirs = (Get-SubDirectories -Directory $Path -SuppressErrors)
       
-      Foreach ($Dir in $SubDirs){$DirIndex.Add("$Dir",(Get-Files -Directory $Dir -ExcludeFullPath))}
+      :DirLoop Foreach ($Dir in $SubDirs){
+          
+            Try {$SubdirFiles = Get-Files -Directory $Dir -ExcludeFullPath}
+            Catch {$ErrorDirs.Add("$($Error[0].Exception.Message)") | Out-Null; Continue DirLoop}
+            
+            $DirIndex.Add("$Dir",$SubdirFiles)}
       
       Remove-Variable SubDirs -ErrorAction SilentlyContinue
       &$ReclaimMemory
