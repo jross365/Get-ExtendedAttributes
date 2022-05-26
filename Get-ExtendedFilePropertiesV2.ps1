@@ -321,32 +321,74 @@ end {
 
 } #Close if $ReportAccessErrors.IsPresent
 
-  #endregion Report errors
+  #endregion
 
-    #region Filter out unused properties
-If ($ReduceDown.IsPresent){ #!!!THIS NEEDS SUBSTANTIALLY IMPROVED/OPTIMIZED
-           
+    
+If ($ReduceDown.IsPresent){ #!!!THIS NEEDS SUBSTANTIALLY IMPROVED/OPTIMIZED (WIP)
+   
+     #region Identify Unique Properties and preserve Property Order
         $PropertiesHash = @{}
-        $Properties = $Results | Get-Member
-        $Properties.ForEach({$PropertiesHash.Add($_,0)})
-        $UsedProperties = New-Object System.Collections.ArrayList
+
+        $TotalPropsCount = ($Results.ForEach({($_ | Get-Member -MemberType NoteProperty).Name}) | Sort-Object -Unique).Count
 
         $Results.ForEach({
-        $Obj = $_
-        $Properties.ForEach({If ($Obj.$_.Length -ge 1){$PropertiesHash.$_++}})
+
+        $ObjProperties = $_.psobject.Properties.Name
+        
+        (0..$ObjProperties.GetUpperBound(0)).ForEach({
+
+            $Index = $_
+            $Property = $ObjProperties[$Index]
+            
+            Try{[System.Collections.arraylist]$PropertyHashValues = $PropertiesHash."$Property"}
+            Catch {} #Suppress "Length" named property error
+            
+              If ($null -eq $PropertyHashValues){
+                
+                $PropertiesHash.Add($Property,[system.collections.arraylist]@($Index))}
+              
+              Else{
+                
+                $PropertyHashValues.Add($Index) | Out-Null
+                
+                $SortedValues = New-Object System.Collections.ArrayList
+                ($PropertyHashValues | Sort-Object -Unique -Descending).ForEach({$SortedValues.Add($_) | out-null})
+                
+                $PropertiesHash.Remove($Property) | out-null
+
+                $PropertiesHash.Add($Property,$SortedValues)
+
+              }
+
+              If ($PropertiesHash.Count -eq $TotalPropsCount){break} #As soon as we've encountered every possible property, break
+
+            }) 
+
         })
 
-        $Properties.ForEach({If ($PropertiesHash.$_ -ge 1){$UsedProperties.Add($_) | Out-Null}})
+        $PropertyArrangement = New-Object System.Collections.ArrayList
 
-        $Results = $Results | Select-Object $UsedProperties
+        ($PropertiesHash.Keys).foreach({$PropertyArrangement.Add([pscustomobject]@{"Name" = $_; "Index" = $(($PropertiesHash.$_)[0])}) | Out-Null })
 
-} 
+        $AllProperties = ($PropertyArrangement | Sort-Object "Index").Name
+
+        #LEFT OFF HERE: NOW WE HAVE AN ORDERED LIST OF PROPERTIES
+        #NOW WE NEED TO IDENTIFY "$UsedProperties" FROM THE LIST OF $AllProperties
+        #AND OMIT PROPERTIES WITH UNIVERSALLY BLANK VALUES
+
+        #endregion Identify Unique Properties
+
+        
+ 
+} #Close if reduceDown is present
+
+#endregion
 
 Else {$Results = $Results | Select-Object *}
 
 Return $Results
 
-    #endregion
+    
 
 } #Close End
 
