@@ -96,8 +96,8 @@ param(
     [Parameter(Mandatory=$False)][switch]$WriteProgress,
     [Parameter(ParameterSetName='HelperFile',Mandatory=$False)] [switch]$UseHelperFile,
     [Parameter(ParameterSetName='HelperFile',Mandatory=$False)] [string]$HelperFilename="exthelper.json",
-    [Parameter(Mandatory=$False)][array]$FilterOut,
-    [Parameter(Mandatory=$False)][array]$IncludeOnly,
+    [Parameter(Mandatory=$False)][array]$Exclude,
+    [Parameter(Mandatory=$False)][array]$Include,
     [Parameter(Mandatory=$False)][switch]$ReduceDown,
     [Parameter(Mandatory=$False)][switch]$ReportAccessErrors,
     [Parameter(Mandatory=$False)][switch]$ErrorsToFile,
@@ -120,10 +120,10 @@ $ReclaimMemory = {
 #endregion
 
 #region Build Filter expression
-If ($FilterOut.Count -gt 0){$OutFilter = $FilterOut -join '|'; $OutFilterEnabled = $true}
+If ($Exclude.Count -gt 0){$OutFilter = $Exclude -join '|'; $OutFilterEnabled = $true}
 Else {$OutFilterEnabled = $false}
 
-If ($IncludeOnly.Count -gt 0){$InFilter = $IncludeOnly -join '|'; $InFilterEnabled = $true}
+If ($Include.Count -gt 0){$InFilter = $Include -join '|'; $InFilterEnabled = $true}
 Else {$InFilterEnabled = $false}
 
 #endregion
@@ -215,7 +215,7 @@ If ($OutFilterEnabled -eq $true){$KeyDirs = $KeyDirs.Where({$_ -inotmatch "$OutF
     # Commented this out because "InFilter" works best against full file paths:
 #If ($InFilterEnabled -eq $true) {$KeyDirs = $KeyDirs.Where({$_ -imatch "$InFilter"})}
 
-#endregion
+#endregion Build Directory
 
 #region Filter hash table file values
 $KeyDirs.ForEach({
@@ -288,8 +288,7 @@ $Files.ForEach({
 
 end {
     
-    #region Report errors and remove error entries from results:
-    #!!!THIS IS STIL NOT WORKING PROPERLY, NEED TO CONTINUE TO WORK ON IT - NOT REPORTING OUT ERRORS TO CONSOLE
+    #region Report errors, if requested:
         
     #Report Exceptions, if specified
     If ($ReportAccessErrors.IsPresent){
@@ -322,35 +321,7 @@ end {
 
 } #Close if $ReportAccessErrors.IsPresent
 
-    #Remove all error entries from Results and sort by path   
-    
-   <# 
-   
-   #Commented out: Exceptions have been filtered out, and the paths were sorted at the initial subdirectory enumeration
-   
-   $Results = $Results.Where({$_.GetType().Name -imatch "Object"}) | Sort-Object -Property Path
-    
-    (0..($Results.Count -1)).ForEach({
-    
-    $Index = $_
-
-    If ($Results[$Index].psobject.Properties.Where({$_.MemberType -eq "NoteProperty"}).Count -eq 0){
-    
-    Write-Error "$($Results[$Index].ErrorRecord)"
-    
-    $ErrorResult = $Results[$Index]
-
-    $Results.Remove($ErrorResult)
-
-    } 
-
-    })
-
-    &$ReclaimMemory
-
-
-    #>
-    #endregion Report errors
+  #endregion Report errors
 
     #region Filter out unused properties
 If ($ReduceDown.IsPresent){ #!!!THIS NEEDS SUBSTANTIALLY IMPROVED/OPTIMIZED
