@@ -188,20 +188,18 @@ Process {
 #region Build Directory/File Hashtable
 
 $DirIndex = @{}
-$ErrorDirs = New-Object System.Collections.ArrayList # To store
+$Exceptions = New-Object System.Collections.ArrayList # To store
 
 $DirIndex.Add("$Path",(Get-Files -Directory $Path -ExcludeFullPath))
-
-
 
 If ($Recurse.IsPresent){
     
       $SubDirs = (Get-SubDirectories -Directory $Path -SuppressErrors)
       
       :DirLoop Foreach ($Dir in $SubDirs){
-          
+
             Try {$SubdirFiles = Get-Files -Directory $Dir -ExcludeFullPath}
-            Catch {$ErrorDirs.Add("$($Error[0].Exception.Message)") | Out-Null; Continue DirLoop}
+            Catch {$Exceptions.Add("$($Error[0].Exception.Message)") | Out-Null; Continue DirLoop}
             
             $DirIndex.Add("$Dir",$SubdirFiles)}
       
@@ -210,11 +208,11 @@ If ($Recurse.IsPresent){
 
 } #Close If Recurse.IsPresent
 
-$KeyDirs = $DirIndex.GetEnumerator().Name | Out-String -Stream
+$KeyDirs = $DirIndex.GetEnumerator().Name | Out-String -Stream | Sort-Object
 
 If ($OutFilterEnabled -eq $true){$KeyDirs = $KeyDirs.Where({$_ -inotmatch "$OutFilter"})}
 
-    #Commented this out because "InFilter" works best against full file paths:
+    # Commented this out because "InFilter" works best against full file paths:
 #If ($InFilterEnabled -eq $true) {$KeyDirs = $KeyDirs.Where({$_ -imatch "$InFilter"})}
 
 #endregion
@@ -292,13 +290,10 @@ end {
     
     #region Report errors and remove error entries from results:
     #!!!THIS IS STIL NOT WORKING PROPERLY, NEED TO CONTINUE TO WORK ON IT - NOT REPORTING OUT ERRORS TO CONSOLE
-    #$Files[0].ErrorRecord.Exception.Message
-    
+        
     #Report Exceptions, if specified
     If ($ReportAccessErrors.IsPresent){
          
-        $Exceptions = $Results.Where({$_.GetType().Name -notmatch "Object"}).InnerException.Message
-        
         If ($ErrorsToFile.IsPresent -and $Exceptions.count -gt 0){
 
         $ErrorOutFileError = $False
@@ -318,16 +313,22 @@ end {
 
         } #Close Switch
 
-        If ($ErrorOutFileError -eq $True){Write-Host "Could not append errors to $ErrorOutFile, writing to console" -ForegroundColor Yellow; $Exceptions.ForEach({Write-Host "$_"})}
+        If ($ErrorOutFileError -eq $True){Write-Verbose "Could not append errors to $ErrorOutFile, writing to console:" -Verbose; $Exceptions.ForEach({Write-Error "$_"})}
      
     } #Close if ErrorsToFile is present
-
-    If (!($ErrorsToFile.IsPresent) -and $Exceptions.count -gt 0){$Exceptions.ForEach({Write-Host "$_"})}
+    
+    #Otherwise, we simply write the errors to console:
+    If (!($ErrorsToFile.IsPresent) -and $Exceptions.count -gt 0){$Exceptions.ForEach({Write-Error "$_"})}
 
 } #Close if $ReportAccessErrors.IsPresent
 
-    #Remove all error entries from Results and sort by path | #THIS STILL ISN'T WORKING
-    $Results = $Results.Where({$_.GetType().Name -imatch "Object"}) | Sort-Object -Property Path
+    #Remove all error entries from Results and sort by path   
+    
+   <# 
+   
+   #Commented out: Exceptions have been filtered out, and the paths were sorted at the initial subdirectory enumeration
+   
+   $Results = $Results.Where({$_.GetType().Name -imatch "Object"}) | Sort-Object -Property Path
     
     (0..($Results.Count -1)).ForEach({
     
@@ -347,6 +348,8 @@ end {
 
     &$ReclaimMemory
 
+
+    #>
     #endregion Report errors
 
     #region Filter out unused properties
