@@ -99,14 +99,12 @@ param(
     [Parameter(Mandatory=$False)] [array]$Include,
     [Parameter(Mandatory=$False)] [switch]$OmitEmptyFields,
     [Parameter(Mandatory=$False)] [switch]$ReportAccessErrors,
-    [Parameter(Mandatory=$False)] [switch]$ErrorsToFile,
     [Parameter(Mandatory=$False)] [string]$ErrorOutFile
 )
 
 begin {
 
 #region check variables
-
 If (!(Test-Path -Path $Path)){throw "$Path is not a valid path"}
 
 If ($UseHelperFile.IsPresent){
@@ -116,6 +114,28 @@ If ($UseHelperFile.IsPresent){
 
     If (($JSON[0].psobject.Properties.Name -join ',') -ne "Extension,Attrs"){throw "$HelperFilename does not contain the expected properties: Extension, Attrs"}
 }
+
+If ($ReportAccessErrors.IsPresent -and $ErrorOutFile.Length -gt 0){
+    
+    Switch ((Test-Path $ErrorOutFile)){
+
+    $True {
+            Try {"" | Out-File -Append $ErrorOutFile -ErrorAction Stop}
+            Catch {throw "Error file $ErrorOutFile exists, but isn't writable"}
+    }
+
+    $False {
+
+        Try {"" | Out-File $ErrorOutFile -ErrorAction Stop}
+        Catch {throw "Error file $ErrorOutFile couldn't be created"}
+
+    }
+
+    } #Close Switch
+
+    If ($ErrorOutFileError -eq $True){Write-Verbose "Could not append errors to $ErrorOutFile, writing to console:" -Verbose; $Exceptions.ForEach({Write-Error "$_"})}
+ 
+} #Close if ErrorsToFile is present
 
 #endregion
 
@@ -308,38 +328,29 @@ end {
     #region Report errors, if requested:
         
     #Report Exceptions, if specified
-    If ($ReportAccessErrors.IsPresent){
+    If ($ReportAccessErrors.IsPresent -and $Exceptions.Count -gt 0){
          
-        If ($ErrorsToFile.IsPresent -and $Exceptions.count -gt 0){
-
-        $ErrorOutFileError = $False
-        Switch ((Test-Path $ErrorOutFile)){
-
+        switch (($ErrorOutFile.Length -gt 0)){
+        
         $True {
+
                 Try {$Exceptions | Out-File -Append $ErrorOutFile -ErrorAction Stop}
-                Catch {$ErrorOutFileError = $True}
-        }
+                Catch {
+                        
+                        Write-Verbose "Could not append errors to $ErrorOutFile, writing to console:" -Verbose
+                        $Exceptions.ForEach({Write-Error "$_"})
 
-        $False {
+                            } #Close Catch
 
-            Try {$Exceptions | Out-File $ErrorOutFile -ErrorAction Stop}
-            Catch {$ErrorOutFileError = $True}
+        } #Close True
 
-        }
+        $False {$Exceptions.ForEach({Write-Error "$_"})}
 
-        } #Close Switch
-
-        If ($ErrorOutFileError -eq $True){Write-Verbose "Could not append errors to $ErrorOutFile, writing to console:" -Verbose; $Exceptions.ForEach({Write-Error "$_"})}
+        } #Close switch
      
-    } #Close if ErrorsToFile is present
-    
-    #Otherwise, we simply write the errors to console:
-    If (!($ErrorsToFile.IsPresent) -and $Exceptions.count -gt 0){$Exceptions.ForEach({Write-Error "$_"})}
-
 } #Close if $ReportAccessErrors.IsPresent
 
   #endregion
-
     
 If ($OmitEmptyFields.IsPresent){
    
