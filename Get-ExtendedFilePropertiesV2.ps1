@@ -104,7 +104,23 @@ param(
 )
 
 begin {
+
+#region check variables
+
+If (!(Test-Path -Path $Path)){throw "$Path is not a valid path"}
+
+If ($UseHelperFile.IsPresent){
+
+    Try {$JSON = Get-Content $HelperFilename -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop}
+    Catch {throw "Helper file $HelperFilename is not valid"}
+
+    If (($JSON[0].psobject.Properties.Name -join ',') -ne "Extension,Attrs"){throw "$HelperFilename does not contain the expected properties: Extension, Attrs"}
+}
+
+#endregion
+
 #region Define preemptive variables
+
 $ShellObj = New-Object -ComObject Shell.Application
 $Results = New-Object System.Collections.ArrayList
 
@@ -160,9 +176,6 @@ $NoValueAttrs.ForEach({$ValidColumns.Remove($_)})
 If ($UseHelperFile.IsPresent){
     $HelperHash = @{}
 
-    Try {$JSON = Get-Content $HelperFilename -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop}
-    Catch {throw "Helper file $HelperFilename is not valid"}
-
     $JSON.ForEach({
                     
                     [System.Collections.ArrayList]$HelperAttrs = $_.Attrs
@@ -211,8 +224,10 @@ $KeyDirs = $DirIndex.GetEnumerator().Name | Out-String -Stream | Sort-Object
 
 If ($OutFilterEnabled -eq $true){$KeyDirs = $KeyDirs.Where({$_ -inotmatch "$OutFilter"})}
 
-    # Commented this out because "InFilter" works best against full file paths:
-#If ($InFilterEnabled -eq $true) {$KeyDirs = $KeyDirs.Where({$_ -imatch "$InFilter"})}
+<#
+ Commented this out because "InFilter" works best against full file paths:
+If ($InFilterEnabled -eq $true) {$KeyDirs = $KeyDirs.Where({$_ -imatch "$InFilter"})}
+#>
 
 #endregion Build Directory
 
@@ -326,14 +341,27 @@ end {
   #endregion
 
     
-If ($OmitEmptyFields.IsPresent){ 
+If ($OmitEmptyFields.IsPresent){
    
      #region Identify Unique Properties and preserve Property Order
         $PropertiesHash = @{}
 
         #The fastest way to total up the number of properties:
         $TotalProps = @{} 
-        $Results.ForEach({(($_.psobject.Properties.Name).ForEach({try {$TotalProps.Add("$_",0)} catch {} }))}) 
+        
+        Foreach ($Line in $Results){
+
+        $LineProperties = $Line.psobject.Properties.Name
+        
+            :PropLoop foreach ($Property in $LineProperties){
+                
+                try {$TotalProps.Add("$Property",0)} 
+                catch {continue PropLoop}
+
+            }
+
+        }
+        
         $TotalPropsCount = $TotalProps.Count
         
         Remove-Variable TotalProps; &$ReclaimMemory
@@ -341,18 +369,15 @@ If ($OmitEmptyFields.IsPresent){
         $Results.ForEach({
 
         $ObjProperties = $_.psobject.Properties.Name
-        
-        (0..$ObjProperties.GetUpperBound(0)).ForEach({
 
-            $Index = $_
+        :IndexLoop Foreach ($Index in (0..$ObjProperties.GetUpperBound(0))){
+
             $Property = $ObjProperties[$Index]
             
             Try{[System.Collections.arraylist]$PropertyHashValues = $PropertiesHash."$Property"}
             Catch {} #Suppress "Length" named property error
             
-              If ($null -eq $PropertyHashValues){
-                
-                $PropertiesHash.Add($Property,[system.collections.arraylist]@($Index))}
+              If ($null -eq $PropertyHashValues){$PropertiesHash.Add($Property,[system.collections.arraylist]@($Index))}
               
               Else{
                 
@@ -367,9 +392,9 @@ If ($OmitEmptyFields.IsPresent){
 
               }
 
-              If ($PropertiesHash.Count -eq $TotalPropsCount){break} #As soon as we've encountered every possible property, break
+              If ($PropertiesHash.Count -eq $TotalPropsCount){break IndexLoop} #As soon as we've encountered every possible property, break
 
-            }) 
+            } 
 
         })
 
@@ -396,11 +421,9 @@ If ($OmitEmptyFields.IsPresent){
 
         $Results = $Results | Select-Object $UsedProperties
 
-} #Close if reduceDown is present
+    } #Close if reduceDown is present
 
 #endregion
-
-Else {$Results = $Results | Select-Object *}
 
 return $Results
 
