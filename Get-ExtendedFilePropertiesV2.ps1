@@ -18,7 +18,6 @@ Function Get-Files ($Directory,[switch]$ExcludeFullPath){
 
 Try {$Files = [System.IO.Directory]::EnumerateFiles("$Directory","*.*","TopDirectoryOnly")}
 Catch {throw "$($_.Exception.Message)"} #Changed this because we're not leaning on recursion in this case
-#Catch {Write-Error "$($_.Exception.Message)"; Continue}
 
 $FilesNormalized = New-Object System.Collections.ArrayList
 $Files.Where({$_ -notmatch 'thumbs.db'}).ForEach({$FilesNormalized.Add($_) | Out-Null})
@@ -92,16 +91,16 @@ Function Get-ExtendedAttributes {
 [CmdletBinding()] 
 param( 
     [Parameter(Mandatory=$False)] [string]$Path=((Get-Location).ProviderPath), 
-    [Parameter(Mandatory=$False)][switch]$Recurse,
-    [Parameter(Mandatory=$False)][switch]$WriteProgress,
+    [Parameter(Mandatory=$False)] [switch]$Recurse,
+    [Parameter(Mandatory=$False)] [switch]$WriteProgress,
     [Parameter(ParameterSetName='HelperFile',Mandatory=$False)] [switch]$UseHelperFile,
     [Parameter(ParameterSetName='HelperFile',Mandatory=$False)] [string]$HelperFilename="exthelper.json",
-    [Parameter(Mandatory=$False)][array]$Exclude,
-    [Parameter(Mandatory=$False)][array]$Include,
-    [Parameter(Mandatory=$False)][switch]$ReduceDown,
-    [Parameter(Mandatory=$False)][switch]$ReportAccessErrors,
-    [Parameter(Mandatory=$False)][switch]$ErrorsToFile,
-    [Parameter(Mandatory=$False)][string]$ErrorOutFile
+    [Parameter(Mandatory=$False)] [array]$Exclude,
+    [Parameter(Mandatory=$False)] [array]$Include,
+    [Parameter(Mandatory=$False)] [switch]$OmitEmptyFields,
+    [Parameter(Mandatory=$False)] [switch]$ReportAccessErrors,
+    [Parameter(Mandatory=$False)] [switch]$ErrorsToFile,
+    [Parameter(Mandatory=$False)] [string]$ErrorOutFile
 )
 
 begin {
@@ -167,7 +166,7 @@ If ($UseHelperFile.IsPresent){
     $JSON.ForEach({
                     
                     [System.Collections.ArrayList]$HelperAttrs = $_.Attrs
-                    $NoValueAttrs.ForEach({$HelperAttrs.Remove($_)}) #Remove "No-Value Attributes"
+                    $NoValueAttrs.ForEach({$HelperAttrs.Remove($_)})
                     $HelperHash.Add(($_.Extension),$HelperAttrs)
     
                 })
@@ -282,6 +281,9 @@ $Files.ForEach({
 
 } #Close :KeyLoop
 
+Remove-Variable DirIndex,KeyDirs,Files,FileAttrs,TargetColumns,Object -ErrorAction SilentlyContinue
+&$ReclaimMemory
+
 #endregion
 
 } #Close Process
@@ -324,7 +326,7 @@ end {
   #endregion
 
     
-If ($ReduceDown.IsPresent){ #!!!THIS NEEDS SUBSTANTIALLY IMPROVED/OPTIMIZED (WIP)
+If ($OmitEmptyFields.IsPresent){ 
    
      #region Identify Unique Properties and preserve Property Order
         $PropertiesHash = @{}
@@ -372,23 +374,28 @@ If ($ReduceDown.IsPresent){ #!!!THIS NEEDS SUBSTANTIALLY IMPROVED/OPTIMIZED (WIP
 
         $AllProperties = ($PropertyArrangement | Sort-Object "Index").Name
 
-        #LEFT OFF HERE: NOW WE HAVE AN ORDERED LIST OF PROPERTIES
-        #NOW WE NEED TO IDENTIFY "$UsedProperties" FROM THE LIST OF $AllProperties
-        #AND OMIT PROPERTIES WITH UNIVERSALLY BLANK VALUES
+        $UsedProperties = New-Object System.Collections.ArrayList
+
+        Remove-Variable PropertiesHash,TotalPropsCount,PropertyArrangement -ErrorAction SilentlyContinue
+        &$ReclaimMemory
+
+        $AllProperties.ForEach({
+
+        $Property = $_
+
+        If (($Results.Where({$_."$Property".Length -ne 0})).Count -gt 0){$UsedProperties.Add($Property) | Out-Null}
+            
+        })
 
         #endregion Identify Unique Properties
 
-        
- 
+return ($Results | Select-Object $UsedProperties)
+
 } #Close if reduceDown is present
 
 #endregion
 
 Else {$Results = $Results | Select-Object *}
-
-Return $Results
-
-    
 
 } #Close End
 
