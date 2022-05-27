@@ -331,7 +331,12 @@ If ($OmitEmptyFields.IsPresent){
      #region Identify Unique Properties and preserve Property Order
         $PropertiesHash = @{}
 
-        $TotalPropsCount = ($Results.ForEach({($_ | Get-Member -MemberType NoteProperty).Name}) | Sort-Object -Unique).Count
+        #The fastest way to total up the number of properties:
+        $TotalProps = @{} 
+        $Results.ForEach({(($_.psobject.Properties.Name).ForEach({try {$TotalProps.Add("$_",0)} catch {} }))}) 
+        $TotalPropsCount = $TotalProps.Count
+        
+        Remove-Variable TotalProps; &$ReclaimMemory
 
         $Results.ForEach({
 
@@ -389,13 +394,15 @@ If ($OmitEmptyFields.IsPresent){
 
         #endregion Identify Unique Properties
 
-return ($Results | Select-Object $UsedProperties)
+        $Results = $Results | Select-Object $UsedProperties
 
 } #Close if reduceDown is present
 
 #endregion
 
 Else {$Results = $Results | Select-Object *}
+
+return $Results
 
 } #Close End
 
