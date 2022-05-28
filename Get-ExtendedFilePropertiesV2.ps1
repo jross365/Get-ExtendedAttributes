@@ -86,21 +86,7 @@ switch ($NoSort.IsPresent){
         }
 
 
-Function Get-FileExtension([string]$FilePath){
-    
-    $P = $FilePath.Split('.')
-    
-    Switch ($P.Count){
-
-        {$_ -ge 2}{return "$('.' + $P[$P.Count -1])"}
-    
-        #{$_ -le 1} {throw "No extension found in $FilePath"}
-
-        Default {return $null}
-
-    } #Close switch
-
-    } #Close Function
+Function Get-FileExtension([string]$FilePath){return ([System.IO.Path]::GetExtension("$FilePath"))} #Close Function
 
 Function Get-Files ($Directory,[switch]$ExcludeFullPath){
 

@@ -90,21 +90,7 @@ switch ($NoSort.IsPresent){
 
         }
 
-Function Get-FileExtension([string]$FilePath){
-    
-    $P = $FilePath.Split('.')
-    
-    Switch ($P.Count){
-
-        {$_ -ge 2}{return "$('.' + $P[$P.Count -1])"}
-    
-        #{$_ -le 1} {throw "No extension found in $FilePath"}
-
-        Default {return $null}
-
-    } #Close switch
-
-    } #Close Function
+Function Get-FileExtension([string]$FilePath){return ([System.IO.Path]::GetExtension("$FilePath"))} #Close Function
 
 Function Get-Files ($Directory,[switch]$ExcludeFullPath){
 
@@ -268,7 +254,8 @@ $DirIndex.Add("$Path",(Get-Files -Directory $Path -ExcludeFullPath))
 
 If ($Recurse.IsPresent){
     
-      $SubDirs = (Get-SubDirectories -Directory $Path -SuppressErrors)
+      $SubDirs = (Get-Folders -Directory $Path -SuppressErrors -Recurse)
+          
       
       :DirLoop Foreach ($Dir in $SubDirs){
 
@@ -282,12 +269,12 @@ If ($Recurse.IsPresent){
 
 } #Close If Recurse.IsPresent
 
-$KeyDirs = $DirIndex.GetEnumerator().Name | Out-String -Stream | Sort-Object
+$KeyDirs = $DirIndex.GetEnumerator().Name | Out-String -Stream
 
 If ($OutFilterEnabled -eq $true){$KeyDirs = $KeyDirs.Where({$_ -inotmatch "$OutFilter"})}
 
 <#
- Commented this out because "InFilter" works best against full file paths:
+ Commented this out because "InFilter" works best against full file paths, and not against folders:
 If ($InFilterEnabled -eq $true) {$KeyDirs = $KeyDirs.Where({$_ -imatch "$InFilter"})}
 #>
 
