@@ -75,7 +75,13 @@
     
 function Get-Folders ($Directory,[switch]$SuppressErrors,[switch]$Recurse,[switch]$NoSort,[switch]$IgnoreExclusions){
 
+#region Define preliminary variables
 $Exclusions = 'filehistory|windows|recycle|@'
+$Dirs = New-Object System.Collections.ArrayList
+
+$EnumDirs = {[System.IO.Directory]::EnumerateDirectories("$Dir","*","TopDirectory")}
+
+#endregion
 
 #region Validate parameters
 If ($Directory.Length -eq 0){$Directory = (Get-Location).ProviderPath}
@@ -92,12 +98,6 @@ If (!($IgnoreExclusions.IsPresent)){
 Else {$NotTheseNames = {$_ -ne $null}} #Have to put something here, or the .Where statements break
 
 #endregion
-
-$Dirs = New-Object System.Collections.ArrayList
-
-#$Exclusions = 
-
-$EnumDirs = {[System.IO.Directory]::EnumerateDirectories("$Dir","*","TopDirectory")}
 
 $Dir = $Directory #Set for the "root" level enumeration
 
