@@ -121,7 +121,7 @@ $y = 1
 
 $ExtData.ForEach({
     
-    Write-Progress -Activity "Checking property values" -Status "$($_.Name))" -ParentId 1 -PercentComplete ([int](($y / $FileCount) * 100))
+    Write-Progress -Activity "Checking property values" -Status "$($_.Name)" -ParentId 1 -PercentComplete ([int](($y / $FileCount) * 100))
     
     $ObjProperties = $_.psobject.Properties.Name
   
