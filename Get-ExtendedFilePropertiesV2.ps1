@@ -362,15 +362,14 @@ If ($OmitEmptyFields.IsPresent){
         
         Foreach ($Line in $Results){
 
-        $LineProperties = $Line.psobject.Properties.Name
+        ($Line.psobject.Properties.Name).ForEach({
+            
+            $Property = $_
         
-            :PropLoop foreach ($Property in $LineProperties){
-                
-                try {$TotalProps.Add("$Property",0)} 
-                catch {continue PropLoop}
+            If ($null -eq ($TotalProps."$Property")){$TotalProps.Add("$Property",0)}
 
-            }
-
+            })
+       
         }
         
         $TotalPropsCount = $TotalProps.Count
