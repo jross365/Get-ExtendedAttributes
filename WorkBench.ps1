@@ -1,79 +1,18 @@
 
     #WorkBench.ps1 is for cleaning up/testing changes to functions and blocks of code
     
-    Function Get-Directories ($Directory){
-        $Dirs = New-Object System.Collections.ArrayList
-    
-        Try {([System.IO.Directory]::EnumerateDirectories("$Directory","*","TopDirectory")).ForEach({$Dirs.Add($_) | Out-Null})}
-        catch {throw "Unable to enumerate directories in $Directory"}
-    
-        Return $Dirs
-    
-    }
-    
-    Function Get-SubDirectories ($Directory,[switch]$SuppressErrors){
-    
-    $SubDirs = New-Object System.Collections.ArrayList
-    
-    If ($Directory.Length -eq 0){$Directory = (Get-Location).ProviderPath}
-    
-    [System.Collections.ArrayList]$Directories = (Get-Directories -Directory $Directory).Where({$_ -inotmatch 'filehistory|windows|recycle|@'})
-    
-    $DirCount = $Directories.Count
-    
-    Do {
-    
-        $DirQueue = New-Object System.Collections.ArrayList
+   
+function Get-Folders {
+    [CmdletBinding()] 
+    param( 
+        [Parameter(Mandatory=$False)] [string]$Directory=((Get-Location).ProviderPath), 
+        [Parameter(Mandatory=$False)] [switch]$SuppressErrors,
+        [Parameter(Mandatory=$False)] [switch]$Recurse,
+        [Parameter(Mandatory=$False)] [switch]$NoSort,
+        [Parameter(Mandatory=$False)] [switch]$IgnoreExclusions,
+        [Parameter(Mandatory=$False)] [switch]$IncludeRoot
         
-        :DirLoop Foreach ($Dir in $Directories){
-            
-            $SubDirs.Add($Dir) | Out-Null
-            
-            Try {$DirQueue += (Get-Directories -Directory $Dir)}
-            Catch {
-                
-                If (!$SuppressErrors.IsPresent){Write-Error "Cannot enumerate directories in $D"}
-                Continue DirLoop
-            
-            }
-            
-        }
-    
-        $Directories = $DirQueue
-    
-        $DirCount = $Directories.Count
-    
-    } #Close Do
-    
-    Until ($DirCount -eq 0)
-    
-    return $SubDirs
-    
-    } #Close Get SubDirectories
-
-    Function Get-Files ($Directory,[switch]$ExcludeFullPath){
-
-        Try {$Files = [System.IO.Directory]::EnumerateFiles("$Directory","*.*","TopDirectoryOnly")}
-        Catch {throw "$($_.Exception.Message)"} #Changed this because we're not leaning on recursion in this case
-        
-        $FilesNormalized = New-Object System.Collections.ArrayList
-        $Files.Where({$_ -notmatch 'thumbs.db'}).ForEach({$FilesNormalized.Add($_) | Out-Null})
-        
-        If ($ExcludeFullPath.IsPresent -and $FilesNormalized.Count -ne 0){ 
-            
-            (0..($FilesNormalized.Count - 1 )).ForEach({
-                
-                $FilesNormalized[$_] = $FilesNormalized[$_].Replace("$Directory",'').TrimStart('\\')
-            
-            }) 
-        
-        }
-        
-        Return $FilesNormalized
-        
-        }
-    
-function Get-Folders ($Directory,[switch]$SuppressErrors,[switch]$Recurse,[switch]$NoSort,[switch]$IgnoreExclusions){
+    )
 
 #region Define preliminary variables
 $Exclusions = 'filehistory|windows|recycle|@'
@@ -96,6 +35,8 @@ If (!($IgnoreExclusions.IsPresent)){
 }
 
 Else {$NotTheseNames = {$_ -ne $null}} #Have to put something here, or the .Where statements break
+
+If ($IncludeRoot.IsPresent){$Dirs.Add($Directory) | out-null}
 
 #endregion
 
@@ -147,3 +88,25 @@ switch ($NoSort.IsPresent){
 } #CloseSwitch
 
         }
+
+        Function Get-Files ($Directory,[switch]$ExcludeFullPath){
+
+            Try {$Files = [System.IO.Directory]::EnumerateFiles("$Directory","*.*","TopDirectoryOnly")}
+            Catch {throw "$($_.Exception.Message)"} #Changed this because we're not leaning on recursion in this case
+            
+            $FilesNormalized = New-Object System.Collections.ArrayList
+            $Files.Where({$_ -notmatch 'thumbs.db'}).ForEach({$FilesNormalized.Add($_) | Out-Null})
+            
+            If ($ExcludeFullPath.IsPresent -and $FilesNormalized.Count -ne 0){ 
+                
+                (0..($FilesNormalized.Count - 1 )).ForEach({
+                    
+                    $FilesNormalized[$_] = $FilesNormalized[$_].Replace("$Directory",'').TrimStart('\\')
+                
+                }) 
+            
+            }
+            
+            Return $FilesNormalized
+            
+            }
