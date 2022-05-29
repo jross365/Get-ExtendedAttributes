@@ -1,7 +1,68 @@
-<#
-V3: Summary: Implementing newly-constructed "Get-Folders" function
-- Combined Get-Directories and Get-SubDirectories into a singular function
-#>
+      <#
+        .SYNOPSIS
+        Enumerates directories (folders).
+
+        .DESCRIPTION
+        Enumerates and returns all directories in a provided path.
+        Can enumerate directories on at the top (root) level, or recursively.
+        
+        .PARAMETER Directory
+        The top-level (root) directory to operate against.
+
+        .PARAMETER SuppressErrors
+        If specified, encountered errors (such as 'Access Denied') will not be reported.
+        
+        .PARAMETER SuppressErrors
+        If specified, encountered errors (such as 'Access Denied') will not be reported.
+        
+        .PARAMETER Recurse
+        If specified, will recursively enumerate all subdirectories nested in the root directory.
+        
+        .PARAMETER NoSort
+        If specified, enumerated directories will be returned out-of-order. This improves the function's performance.
+
+        .PARAMETER IncludeRoot
+        If specified, the directories returned will include the top-level (root) directory.
+
+        .INPUTS
+        None. You cannot pipe objects to Get-Folders.
+
+        .OUTPUTS
+        System.Collections.ArrayList. Get-Folders returns an arraylist of string objects.
+
+        .EXAMPLE
+        PS> Get-Folders C:\Users\User1\Desktop\Docs
+        
+        C:\Users\User1\Desktop\Docs\Financial
+        C:\Users\User1\Desktop\Docs\Docs\Job Seeking
+        C:\Users\User1\Desktop\Docs\Docs\OBS Profiles
+        C:\Users\User1\Desktop\Docs\Docs\Personal
+        C:\Users\User1\Desktop\Docs\Docs\Recipes
+        C:\Users\User1\Desktop\Docs\Docs\Vehicle-Related
+
+        .EXAMPLE
+        PS> Get-Folders C:\Users\User1\Desktop\Docs -Recurse
+
+        C:\Users\User1\Desktop\Docs\Financial
+        C:\Users\User1\Desktop\Docs\Financial\Collections Dispute
+        C:\Users\User1\Desktop\Docs\Job Seeking
+        C:\Users\User1\Desktop\Docs\Job Seeking\2020-2022 Resume Work
+        C:\Users\User1\Desktop\Docs\Job Seeking\2020-2022 Resume Work\Previous Resumes
+        C:\Users\User1\Desktop\Docs\Job Seeking\Archive
+        C:\Users\User1\Desktop\Docs\Job Seeking\Personal Info
+        C:\Users\User1\Desktop\Docs\OBS Profiles
+        C:\Users\User1\Desktop\Docs\OBS Profiles\1080pVR
+        C:\Users\User1\Desktop\Docs\Personal
+        C:\Users\User1\Desktop\Docs\Recipes
+        C:\Users\User1\Desktop\Docs\Vehicle-Related
+        C:\Users\User1\Desktop\Docs\Vehicle-Related\2011 Service Manual
+        C:\Users\User1\Desktop\Docs\Vehicle-Related\2021-08 Sunroof Claim
+        C:\Users\User1\Desktop\Docs\Vehicle-Related\Door Damage
+
+        .LINK
+        GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+
+    #>
 
 function Get-Folders {
     [CmdletBinding()] 
@@ -15,6 +76,7 @@ function Get-Folders {
         
     )
 
+
 #region Define preliminary variables
 $Exclusions = 'filehistory|windows|recycle|@'
 $Dirs = New-Object System.Collections.ArrayList
@@ -24,7 +86,7 @@ $EnumDirs = {[System.IO.Directory]::EnumerateDirectories("$Dir","*","TopDirector
 #endregion
 
 #region Validate parameters
-If ($Directory.Length -eq 0){$Directory = (Get-Location).ProviderPath}
+If ($Directory.Length -eq 0 -or $Directory -eq $null){$Directory = (Get-Location).ProviderPath}
 Else {If (!(Test-Path $Directory)){throw "$Directory is not a valid path"}}
 
 If (!($IgnoreExclusions.IsPresent)){
@@ -453,7 +515,7 @@ If ($OmitEmptyFields.IsPresent){
         $Property = $_
 
         If (($Results.Where({$_."$Property".Length -ne 0})).Count -gt 0){$UsedProperties.Add($Property) | Out-Null}
-            
+
         })
 
         #endregion Identify Unique Properties
