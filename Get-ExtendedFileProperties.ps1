@@ -197,6 +197,12 @@ The directory to operate against.
 .PARAMETER ExcludeFullPath
 If specified, the file names will not include the file's directory path.
 
+.PARAMETER Filter
+Apply an inclusional filter to the output. Is a positional parameter (last position).
+If specified, only paths/files matching the string or expression will be returned.
+
+Note: Filter parameter does not respect asterisks.
+
 .INPUTS
 None. You cannot pipe objects to Get-Files.
 
@@ -219,16 +225,29 @@ Chuck Roast Recipe.docx
 Curry-Roux-chicken-curry-recipe.docx
 Sweet Potato Pie Recipe.docx
 
+.EXAMPLE
+Get-Files -ExcludeFullPath .pdf
+
+Baked Chicken Wings - Seriously the BEST Crispy Baked Chicken Wings!.pdf
+
 .LINK
 GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
 
 #>
 Function Get-Files {
 param([string]$Directory,
-[switch]$ExcludeFullPath
+[switch]$ExcludeFullPath,
+[parameter(Position=2)][string]$Filter
 )
 
 If ($Directory.Length -eq 0 -or $null -eq $Directory){$Directory = (Get-Location).ProviderPath}
+
+If ($null -eq $Filter -or $Filter.length -gt 0){
+    $Filter = $Filter -replace '\*'
+    $FilterBlock = {$_ -imatch "$Filter"}
+    
+    }
+Else {$FilterBlock = $null}
 
 Try {$Files = [System.IO.Directory]::EnumerateFiles("$Directory","*.*","TopDirectoryOnly")}
 Catch {throw "$($_.Exception.Message)"}
@@ -246,7 +265,8 @@ If ($ExcludeFullPath.IsPresent -and $FilesNormalized.Count -ne 0){
 
 }
 
-Return $FilesNormalized
+If ($null -ne $FilterBlock){return ($FilesNormalized.Where($FilterBlock))}
+Else {Return $FilesNormalized}
 
 }
 
