@@ -1,69 +1,68 @@
-      <#
-        .SYNOPSIS
-        Enumerates directories (folders).
+<#
+.SYNOPSIS
+Enumerates directories (folders).
 
-        .DESCRIPTION
-        Enumerates and returns all directories in a provided path.
-        Can enumerate directories on at the top (root) level, or recursively.
-        
-        .PARAMETER Directory
-        The top-level (root) directory to operate against.
+.DESCRIPTION
+Enumerates and returns all directories in a provided path.
+Can enumerate directories on at the top (root) level, or recursively.
 
-        .PARAMETER SuppressErrors
-        If specified, encountered errors (such as 'Access Denied') will not be reported.
-        
-        .PARAMETER SuppressErrors
-        If specified, encountered errors (such as 'Access Denied') will not be reported.
-        
-        .PARAMETER Recurse
-        If specified, will recursively enumerate all subdirectories nested in the root directory.
-        
-        .PARAMETER NoSort
-        If specified, enumerated directories will be returned out-of-order. This improves the function's performance.
+.PARAMETER Directory
+The top-level (root) directory to operate against.
 
-        .PARAMETER IncludeRoot
-        If specified, the directories returned will include the top-level (root) directory.
+.PARAMETER SuppressErrors
+If specified, encountered errors (such as 'Access Denied') will not be reported.
 
-        .INPUTS
-        None. You cannot pipe objects to Get-Folders.
+.PARAMETER SuppressErrors
+If specified, encountered errors (such as 'Access Denied') will not be reported.
 
-        .OUTPUTS
-        System.Collections.ArrayList. Get-Folders returns an arraylist of string objects.
+.PARAMETER Recurse
+If specified, will recursively enumerate all subdirectories nested in the root directory.
 
-        .EXAMPLE
-        PS> Get-Folders C:\Users\User1\Desktop\Docs
-        
-        C:\Users\User1\Desktop\Docs\Financial
-        C:\Users\User1\Desktop\Docs\Docs\Job Seeking
-        C:\Users\User1\Desktop\Docs\Docs\OBS Profiles
-        C:\Users\User1\Desktop\Docs\Docs\Personal
-        C:\Users\User1\Desktop\Docs\Docs\Recipes
-        C:\Users\User1\Desktop\Docs\Docs\Vehicle-Related
+.PARAMETER NoSort
+If specified, enumerated directories will be returned out-of-order. This improves the function's performance.
 
-        .EXAMPLE
-        PS> Get-Folders C:\Users\User1\Desktop\Docs -Recurse
+.PARAMETER IncludeRoot
+If specified, the directories returned will include the top-level (root) directory.
 
-        C:\Users\User1\Desktop\Docs\Financial
-        C:\Users\User1\Desktop\Docs\Financial\Collections Dispute
-        C:\Users\User1\Desktop\Docs\Job Seeking
-        C:\Users\User1\Desktop\Docs\Job Seeking\2020-2022 Resume Work
-        C:\Users\User1\Desktop\Docs\Job Seeking\2020-2022 Resume Work\Previous Resumes
-        C:\Users\User1\Desktop\Docs\Job Seeking\Archive
-        C:\Users\User1\Desktop\Docs\Job Seeking\Personal Info
-        C:\Users\User1\Desktop\Docs\OBS Profiles
-        C:\Users\User1\Desktop\Docs\OBS Profiles\1080pVR
-        C:\Users\User1\Desktop\Docs\Personal
-        C:\Users\User1\Desktop\Docs\Recipes
-        C:\Users\User1\Desktop\Docs\Vehicle-Related
-        C:\Users\User1\Desktop\Docs\Vehicle-Related\2011 Service Manual
-        C:\Users\User1\Desktop\Docs\Vehicle-Related\2021-08 Sunroof Claim
-        C:\Users\User1\Desktop\Docs\Vehicle-Related\Door Damage
+.INPUTS
+None. You cannot pipe objects to Get-Folders.
 
-        .LINK
-        GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+.OUTPUTS
+System.Collections.ArrayList. Get-Folders returns an arraylist of string objects.
 
-    #>
+.EXAMPLE
+Get-Folders C:\Users\User1\Desktop\Docs
 
+C:\Users\User1\Desktop\Docs\Financial
+C:\Users\User1\Desktop\Docs\Docs\Job Seeking
+C:\Users\User1\Desktop\Docs\Docs\OBS Profiles
+C:\Users\User1\Desktop\Docs\Docs\Personal
+C:\Users\User1\Desktop\Docs\Docs\Recipes
+C:\Users\User1\Desktop\Docs\Docs\Vehicle-Related
+
+.EXAMPLE
+Get-Folders C:\Users\User1\Desktop\Docs -Recurse
+
+C:\Users\User1\Desktop\Docs\Financial
+C:\Users\User1\Desktop\Docs\Financial\Collections Dispute
+C:\Users\User1\Desktop\Docs\Job Seeking
+C:\Users\User1\Desktop\Docs\Job Seeking\2020-2022 Resume Work
+C:\Users\User1\Desktop\Docs\Job Seeking\2020-2022 Resume Work\Previous Resumes
+C:\Users\User1\Desktop\Docs\Job Seeking\Archive
+C:\Users\User1\Desktop\Docs\Job Seeking\Personal Info
+C:\Users\User1\Desktop\Docs\OBS Profiles
+C:\Users\User1\Desktop\Docs\OBS Profiles\1080pVR
+C:\Users\User1\Desktop\Docs\Personal
+C:\Users\User1\Desktop\Docs\Recipes
+C:\Users\User1\Desktop\Docs\Vehicle-Related
+C:\Users\User1\Desktop\Docs\Vehicle-Related\2011 Service Manual
+C:\Users\User1\Desktop\Docs\Vehicle-Related\2021-08 Sunroof Claim
+C:\Users\User1\Desktop\Docs\Vehicle-Related\Door Damage
+
+.LINK
+GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+
+#>
 function Get-Folders {
     [CmdletBinding()] 
     param( 
@@ -76,14 +75,12 @@ function Get-Folders {
         
     )
 
-
-#region Define preliminary variables
 $Exclusions = 'filehistory|windows|recycle|@'
 $Dirs = New-Object System.Collections.ArrayList
 
 $EnumDirs = {[System.IO.Directory]::EnumerateDirectories("$Dir","*","TopDirectory")}
 
-#endregion
+
 
 #region Validate parameters
 If ($Directory.Length -eq 0 -or $Directory -eq $null){$Directory = (Get-Location).ProviderPath}
@@ -152,12 +149,89 @@ switch ($NoSort.IsPresent){
 
         }
 
-Function Get-FileExtension([string]$FilePath){return ([System.IO.Path]::GetExtension("$FilePath"))} #Close Function
+<#
+.SYNOPSIS
+Returns a file extension.
 
-Function Get-Files ($Directory,[switch]$ExcludeFullPath){
+.DESCRIPTION
+For a provided file path, returns the extension of the file (including '.')
+Function doesn't care whether the path is valid or the file is real.
+
+.PARAMETER FilePath
+The path of the file to evaluate the extension of.
+
+.INPUTS
+None. You cannot pipe objects to Get-FileExtension.
+
+.OUTPUTS
+String. Get-FileExtension returns the file extension as a string.
+
+.EXAMPLE
+Get-FileExtension -FilePath ext.json
+
+".json"
+
+Note: Actual output does not contain quotes ("").
+
+.LINK
+GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+
+#>
+Function Get-FileExtension {
+    param([string]$FilePath)
+
+    return ([System.IO.Path]::GetExtension("$FilePath"))
+
+} 
+
+<#
+.SYNOPSIS
+Enumerates files.
+
+.DESCRIPTION
+Enumerates and returns all files in a provided directory.
+
+.PARAMETER Directory
+The directory to operate against.
+
+.PARAMETER ExcludeFullPath
+If specified, the file names will not include the file's directory path.
+
+.INPUTS
+None. You cannot pipe objects to Get-Files.
+
+.OUTPUTS
+System.Collections.ArrayList. Get-Files returns an arraylist of string objects.
+
+.EXAMPLE
+Get-Files
+
+C:\Users\User1\Desktop\Docs\recipes\Baked Chicken Wings - Seriously the BEST Crispy Baked Chicken Wings!.pdf
+C:\Users\User1\Desktop\Docs\recipes\Chuck Roast Recipe.docx
+C:\Users\User1\Desktop\Docs\recipes\Curry-Roux-chicken-curry-recipe.docx
+C:\Users\User1\Desktop\Docs\recipes\Sweet Potato Pie Recipe.docx
+
+.EXAMPLE
+Get-Files -ExcludeFullPath
+
+Baked Chicken Wings - Seriously the BEST Crispy Baked Chicken Wings!.pdf
+Chuck Roast Recipe.docx
+Curry-Roux-chicken-curry-recipe.docx
+Sweet Potato Pie Recipe.docx
+
+.LINK
+GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+
+#>
+Function Get-Files {
+param([string]$Directory,
+[switch]$ExcludeFullPath
+)
+
+If ($Directory.Length -eq 0 -or $null -eq $Directory){$Directory = (Get-Location).ProviderPath}
 
 Try {$Files = [System.IO.Directory]::EnumerateFiles("$Directory","*.*","TopDirectoryOnly")}
-Catch {throw "$($_.Exception.Message)"} #Changed this because we're not leaning on recursion in this case
+Catch {throw "$($_.Exception.Message)"}
 
 $FilesNormalized = New-Object System.Collections.ArrayList
 $Files.Where({$_ -notmatch 'thumbs.db'}).ForEach({$FilesNormalized.Add($_) | Out-Null})
