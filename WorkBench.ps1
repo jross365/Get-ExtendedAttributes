@@ -20,8 +20,8 @@ function New-AttrsHelperFile {
     param( 
         [Parameter(Mandatory=$True)] [string]$Folder, 
         [Parameter(Mandatory=$True)] [string]$SaveAs,
-        [Parameter(Mandatory=$False)] [switch]$WriteProgress,
-        [Parameter(Mandatory=$False)] [switch]$BreakBeep
+        [Parameter(Mandatory=$False)] [switch]$WriteProgress
+        
     )
 
 begin {
@@ -75,7 +75,6 @@ If (&$WrProg){Write-Progress -Activity "Importing CSVs" -Status "Completed" -Id 
 
 $Extensions = $Data | Group-Object 'File extension'
 
-Remove-Variable CSV,Data,w -ErrorAction SilentlyContinue
 &$ReclaimMemory
 
 #endregion
@@ -124,6 +123,8 @@ process {
         $TotalProps = @{} 
         
         $FileCount = $ExtData.Count
+
+        $y = 1
         
         If (&$WrProg){Write-Progress -Activity "Analyzing Extensions" -Status "Working on $($Extension.Name) | $($ExtData.Count) entries" -Id 1 -PercentComplete ([int](($x / $ExtCount) * 100))}
         
@@ -156,22 +157,24 @@ process {
         
         $y = 1
         
-        $ExtData.ForEach({
+    :PropLoop Foreach ($Line in $ExtData){
             
-            If (&$WrProg){Write-Progress -Activity "Checking property values" -Status "$($_.Name)" -ParentId 1 -PercentComplete ([int](($y / $FileCount) * 100))}
+            If (&$WrProg){Write-Progress -Activity "Checking property values" -Status "$($Line.Name)" -ParentId 1 -PercentComplete ([int](($y / $FileCount) * 100))}
             
-            $ObjProperties = $_.psobject.Properties.Name
-          
-            :IndexLoop Foreach ($Index in (0..$ObjProperties.GetUpperBound(0))){
-          
+            $ObjProperties = $Line.psobject.Properties.Name
+            
+            $Index = 0
+            $ObjPropsCount = $ObjProperties.GetUpperBound(0)
+
+            Do {
+
                 $Property = $ObjProperties[$Index]
                 
                 Try{[System.Collections.arraylist]$PropertyHashValues = $PropertiesHash."$Property"}
                 Catch {} #Suppress "Length" named property error
                 
                   If ($null -eq $PropertyHashValues){$PropertiesHash.Add($Property,[system.collections.arraylist]@($Index))}
-                  
-                  Else{
+                  Else {
                     
                     $PropertyHashValues.Add($Index) | Out-Null
                     
@@ -183,14 +186,19 @@ process {
                     $PropertiesHash.Add($Property,$SortedValues)
           
                   }
-          
-                  If ($PropertiesHash.Count -eq $TotalPropsCount){If ($BreakBeep.IsPresent){&$Beep}; break IndexLoop} #As soon as we've encountered every possible property, break
-          
-                } 
-        
+
+                  $Index++
+
+
+            }
+            Until (($PropertiesHash.Count -eq $TotalPropsCount) -or ($Index -eq $ObjPropsCount))
+
+            #If we have all of the properties available, Break the "Master" loop:
+            If ($PropertiesHash.Count -eq $TotalPropsCount){Break PropLoop} 
+
                 $y++
         
-            })
+            }
           
             $PropertyArrangement = New-Object System.Collections.ArrayList
           
@@ -199,8 +207,7 @@ process {
             $AllProperties = ($PropertyArrangement | Sort-Object "Index").Name
           
             $UsedProperties = New-Object System.Collections.ArrayList
-          
-            Remove-Variable ExtData,PropertiesHash,TotalPropsCount,PropertyArrangement -ErrorAction SilentlyContinue
+
             &$ReclaimMemory
           
             $AllProperties.ForEach({
@@ -227,8 +234,7 @@ process {
         
         
         $Extensions = $Extensions.Where({$_.Name -ne ($Extension.Name)})
-        
-        Remove-Variable AllProperties,UsedProperties,UsedPropertyNos,PropertiesHash,TotalPropsCount,PropertyArrangement -ErrorAction SilentlyContinue
+
         &$ReclaimMemory
         
         $x++
@@ -240,12 +246,12 @@ process {
 }
 
 end {
+   
     #region Final cleanup
     if (&$WrProg){
         Write-Progress -Activity "Checking property values" -Status "Complete" -ParentId 1 -Completed
         Write-Progress -Activity "Analyzing Extensions" -Status "Complete" -Id 1 -Completed
         }
-    Remove-Variable Object,NoValueAttrs -ErrorAction SilentlyContinue
 
     #endregion
 
