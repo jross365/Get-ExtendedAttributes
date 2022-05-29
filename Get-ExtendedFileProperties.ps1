@@ -147,7 +147,7 @@ switch ($NoSort.IsPresent){
 
 } #CloseSwitch
 
-        }
+}
 
 <#
 .SYNOPSIS
@@ -624,7 +624,7 @@ Function Get-ExtendedAttributes {
     
     } #Close End
     
-    }
+}
 
 
     function New-AttrsHelperFile {
@@ -872,4 +872,4 @@ Function Get-ExtendedAttributes {
         
             }
         
-        }
+}
