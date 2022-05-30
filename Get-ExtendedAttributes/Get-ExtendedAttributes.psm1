@@ -993,9 +993,9 @@ Export-ModuleMember -Function Get-Files
 Export-ModuleMember -Function Get-ExtendedAttributes
 Export-ModuleMember -Function New-AttrsHelperFile
 
-Export-ModuleMember -Alias geag
-Export-ModuleMember -Alias gtfo
-Export-ModuleMember -Alias gtfi
+Export-ModuleMember -Alias gea
+Export-ModuleMember -Alias gfo
+Export-ModuleMember -Alias gfi
 
 [system.collections.arraylist]$SplitPath = ((Get-Command Get-Folders).Module).Path -split '\\'
 $SplitPath[$SplitPath.Count -1] = "exthelper.json"
