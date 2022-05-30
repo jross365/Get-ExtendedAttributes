@@ -535,6 +535,8 @@ Function Get-ExtendedAttributes {
         }#Close True
     
         $False {$TargetColumns = $ValidColumns}
+
+        Default {$TargetColumns = $ValidColumns}
     
         }#Close Switch UserHelperFile.IsPresent
     
@@ -553,7 +555,7 @@ Function Get-ExtendedAttributes {
     
     } #Close :KeyLoop
     
-    Remove-Variable DirIndex,KeyDirs,Files,FileAttrs,TargetColumns,Object -ErrorAction SilentlyContinue
+    Remove-Variable DirIndex,KeyDirs,Files,TargetColumns,Object -ErrorAction SilentlyContinue
     &$ReclaimMemory
     
     #endregion
@@ -961,3 +963,16 @@ Export-ModuleMember -Function Get-ExtendedAttributes
 Export-ModuleMember -Function New-AttrsHelperFile
 
 Export-ModuleMember -Alias gea
+
+[system.collections.arraylist]$SplitPath = ((Get-Command Get-Folders).Module).Path -split '\\'
+$SplitPath[$SplitPath.Count -1] = "exthelper.json"
+$HelperFile = $SplitPath -join '\'
+Remove-Variable $SplitPath -ErrorAction SilentlyContinue
+
+If (Test-Path $HelperFile){
+    
+    Export-ModuleMember -Variable HelperFile
+    Write-Verbose 'Helper File found, path stored as variable $HelperFile' -Verbose
+    Write-Verbose "Helper File location: $HelperFile" -Verbose
+
+}
