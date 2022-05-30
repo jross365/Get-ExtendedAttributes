@@ -309,13 +309,13 @@ If specified, access errors encountered during enumeration ("Access denied") wil
 If "-ReportAccessErrors" is specified, this parameter is optional. Writes encountered access errors to the specified file name.
 
 .INPUTS
-None. You cannot pipe objects to Get-Files.
+None. You cannot pipe objects to Get-ExtendedAttributes.
 
 .OUTPUTS
 System.Collections.ArrayList. Get-ExtendedAttributes returns an arraylist of string objects.
 
 .EXAMPLE
-Due to the complexity of this function and the possible use-cases and outputs, please see the GitHub documentation for examples.
+Write-Host "Due to the complexity of this function and the possible use-cases and outputs, please see the GitHub documentation for examples.""
 
 .LINK
 GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
@@ -678,7 +678,35 @@ Function Get-ExtendedAttributes {
     
 }
 
+<#
+.SYNOPSIS
+Creates a helper file for use with Get-ExtendedAttributes.
 
+.DESCRIPTION
+Takes a folder with CSVs created by "Get-ExtendedAttributes" and analyzes the CSVs' contents to generate a new JSON helper file.
+
+.PARAMETER Folder
+The directory to operate against.
+
+.PARAMETER SaveAs
+The file name to save the resultant helper file as.
+
+.PARAMETER WriteProgress
+If specified, will show the the analysis progress as a progress bar.
+
+.INPUTS
+None. You cannot pipe objects to New-AttrsHelperFile.
+
+.OUTPUTS
+System.Collections.ArrayList. Get-ExtendedAttributes returns an arraylist of string objects.
+
+.EXAMPLE
+Write-Host "Due to the complexity of this function and the possible use-cases and outputs, please see the GitHub documentation for examples.""
+
+.LINK
+GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+
+#>
     function New-AttrsHelperFile {
         [CmdletBinding()] 
             param( 
