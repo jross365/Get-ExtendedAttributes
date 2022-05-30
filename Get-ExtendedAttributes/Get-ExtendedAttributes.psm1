@@ -984,8 +984,8 @@ GitHub: https://github.com/jross365/Get-ExtendedAttributes
 
 #region Module Instructions
 New-Alias -Name gea -Value Get-ExtendedAttributes
-New-Alias -Name gtfo -Value Get-Folders
-New-Alias -Name gtfi -Value Get-Files
+New-Alias -Name gfo -Value Get-Folders
+New-Alias -Name gfi -Value Get-Files
 
 Export-ModuleMember -Function Get-Folders
 Export-ModuleMember -Function Get-FileExtension
