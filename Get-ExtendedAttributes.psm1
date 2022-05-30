@@ -732,8 +732,6 @@ GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
         
         } #Close Scriptblock ReclaimMemory
         
-        $Beep = {[system.console]::Beep()}
-        
         $WrProg = {$WriteProgress.IsPresent -eq $true}
         
         $CSVFiles = Get-Files -Directory $Folder -Filter .csv
@@ -953,3 +951,13 @@ GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
             }
         
 }
+
+New-Alias -Name gea -Value Get-ExtendedAttributes
+
+Export-ModuleMember -Function Get-Folders
+Export-ModuleMember -Function Get-FileExtension
+Export-ModuleMember -Function Get-Files
+Export-ModuleMember -Function Get-ExtendedAttributes
+Export-ModuleMember -Function New-AttrsHelperFile
+
+Export-ModuleMember -Alias gea
