@@ -270,6 +270,57 @@ Else {Return $FilesNormalized}
 
 }
 
+<#
+.SYNOPSIS
+Enumerates files and returns extended attributes.
+
+.DESCRIPTION
+Enumerates extended attributes (access to media, document, etc) for files in a similar format to "Get-ChildItem".
+
+.PARAMETER Path
+The directory to operate against.
+
+.PARAMETER Recurse
+If specified, recursively enumerate files in all subdirectories nested in the root directory.
+
+.PARAMETER WriteProgress
+If specified, will show the progress of file attributes enumeration with a progress bar.
+
+.PARAMETER UseHelperFile
+If specified, instructs function to use a "helper file" to speed up attributes enumeration.
+
+.PARAMETER HelperFileName
+If "-UseHelperFile" is specified, this parameter is mandatory. The full path of the helper file (JSON).
+
+.PARAMETER Exclude
+If specified, applies an exclusionary filter to files or folders. Comma-separate strings for multiple exclusions.
+
+.PARAMETER Include
+If specified, applies an inclusionary filter to files. Comma-separate strings for multiple exclusions.
+Inclusionary filters aren't applied to folders, by design. 
+
+.PARAMETER OmitEmptyFields
+If specified, returned file attributes are filtered to include only attributes that aren't empty. Columns without any values are omitted.
+
+.PARAMETER ReportAccessErrors
+If specified, access errors encountered during enumeration ("Access denied") will be reported in the console after enumeration is complete.
+
+.PARAMETER ErrorOutFile
+If "-ReportAccessErrors" is specified, this parameter is optional. Writes encountered access errors to the specified file name.
+
+.INPUTS
+None. You cannot pipe objects to Get-Files.
+
+.OUTPUTS
+System.Collections.ArrayList. Get-ExtendedAttributes returns an arraylist of string objects.
+
+.EXAMPLE
+Due to the complexity of this function and the possible use-cases and outputs, please see the GitHub documentation for examples.
+
+.LINK
+GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+
+#>
 Function Get-ExtendedAttributes {
 
     [CmdletBinding()] 
@@ -430,9 +481,10 @@ Function Get-ExtendedAttributes {
     If ($OutFilterEnabled -eq $true){$KeyDirs = $KeyDirs.Where({$_ -inotmatch "$OutFilter"})}
     
     <#
-     Commented this out because "InFilter" works best against full file paths, and not against folders:
-    If ($InFilterEnabled -eq $true) {$KeyDirs = $KeyDirs.Where({$_ -imatch "$InFilter"})}
-    #>
+     #Commented this out because "InFilter" works best against full file paths, and not against folders:
+    
+     If ($InFilterEnabled -eq $true) {$KeyDirs = $KeyDirs.Where({$_ -imatch "$InFilter"})}
+     #>
     
     #endregion Build Directory
     
