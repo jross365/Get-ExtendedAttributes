@@ -325,14 +325,14 @@ Function Get-ExtendedAttributes {
 
     [CmdletBinding()] 
     param( 
-        [Parameter(Mandatory=$False)] [string]$Path=((Get-Location).ProviderPath), 
+        [Parameter(Mandatory=$False,Position=0)] [string]$Path=((Get-Location).ProviderPath), 
         [Parameter(Mandatory=$False)] [switch]$Recurse,
         [Parameter(Mandatory=$False)] [switch]$WriteProgress,
         [Parameter(ParameterSetName='HelperFile',Mandatory=$False)] [switch]$UseHelperFile,
         [Parameter(ParameterSetName='HelperFile',Mandatory=$False)] [string]$HelperFilename="exthelper.json",
         [Parameter(Mandatory=$False)] [array]$Exclude,
         [Parameter(Mandatory=$False)] [array]$Include,
-        [Parameter(Mandatory=$False)] [switch]$OmitEmptyFields,
+        [Parameter(Mandatory=$False)][Alias('Clean')] [switch]$OmitEmptyFields,
         [Parameter(Mandatory=$False)] [switch]$ReportAccessErrors,
         [Parameter(Mandatory=$False)] [string]$ErrorOutFile
     )
@@ -342,6 +342,10 @@ Function Get-ExtendedAttributes {
     #region check variables
     If (!(Test-Path -Path $Path)){throw "$Path is not a valid path"}
     
+    $FSOInfo = Get-Item $Path
+    If (($FSOInfo).Attributes -contains 'Directory'){$FSOType = "FSO-Directory"; $NameSpace = $Path}
+    Else {$FSOType = "FSO-File"; $NameSpace = $FSOInfo.Directory.FullName}
+
     If ($UseHelperFile.IsPresent){
     
         Try {$JSON = Get-Content $HelperFilename -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop}
@@ -399,8 +403,8 @@ Function Get-ExtendedAttributes {
     #endregion
     
     #region Enumerate Attribute Columns
-    Try {$RootPath = $ShellObj.Namespace($Path)}
-    Catch {throw "Unable to initialize Shell Application for namespace $Path"}
+    Try {$RootPath = $ShellObj.Namespace($NameSpace)}
+    Catch {throw "Unable to initialize Shell Application for namespace $Space"}
     
     $AttrHash = @{}
     
@@ -453,47 +457,52 @@ Function Get-ExtendedAttributes {
     Process {
     
     #region Build Directory/File Hashtable
-    
     $DirIndex = @{}
-    $Exceptions = New-Object System.Collections.ArrayList # To store
+    $Exceptions = New-Object System.Collections.ArrayList # To store error output
     
-    $DirIndex.Add("$Path",(Get-Files -Directory $Path -ExcludeFullPath))
+    Switch ($FSOType){ #Actions to take based on source type (file or directory)
+
+    {$_ -eq "FSO-Directory"}{
     
-    If ($Recurse.IsPresent){
-        
-          $SubDirs = (Get-Folders -Directory $Path -SuppressErrors -Recurse)
-              
-          
-          :DirLoop Foreach ($Dir in $SubDirs){
-    
-                Try {$SubdirFiles = Get-Files -Directory $Dir -ExcludeFullPath}
-                Catch {$Exceptions.Add("$($Error[0].Exception.Message)") | Out-Null; Continue DirLoop}
-                
-                $DirIndex.Add("$Dir",$SubdirFiles)}
-          
-          Remove-Variable SubDirs -ErrorAction SilentlyContinue
-          &$ReclaimMemory
-    
-    } #Close If Recurse.IsPresent
-    
+                        $DirIndex.Add("$Path",(Get-Files -Directory $Path -ExcludeFullPath))
+                    
+                        If ($Recurse.IsPresent){
+                            
+                        $SubDirs = (Get-Folders -Directory $Path -SuppressErrors -Recurse)
+                            
+                        :DirLoop Foreach ($Dir in $SubDirs){
+                        
+                                Try {$SubdirFiles = Get-Files -Directory $Dir -ExcludeFullPath}
+                                Catch {$Exceptions.Add("$($Error[0].Exception.Message)") | Out-Null; Continue DirLoop}
+                                    
+                                $DirIndex.Add("$Dir",$SubdirFiles)}
+                            
+                                Remove-Variable SubDirs -ErrorAction SilentlyContinue
+                                &$ReclaimMemory
+                            
+                            } #Close If Recurse.IsPresent
+
+                            }
+
+    {$_ -eq "FSO-File"}{
+                        $DirIndex.Add("$($FSOInfo.Directory.FullName)","$($FSOInfo.Name)")
+                        }
+
+    } #Close Switch
+
     $KeyDirs = $DirIndex.GetEnumerator().Name | Out-String -Stream
-    
-    If ($OutFilterEnabled -eq $true){$KeyDirs = $KeyDirs.Where({$_ -inotmatch "$OutFilter"})}
-    
-    <#
-     #Commented this out because "InFilter" works best against full file paths, and not against folders:
-    
-     If ($InFilterEnabled -eq $true) {$KeyDirs = $KeyDirs.Where({$_ -imatch "$InFilter"})}
-     #>
-    
-    #endregion Build Directory
+        
+    If (($OutFilterEnabled -eq $true) -and ($FSOType -eq "FSO-Directory")){$KeyDirs = $KeyDirs.Where({$_ -inotmatch "$OutFilter"})}
+    #If (($InFilterEnabled -eq $true) -and ($FSOType -eq "FSO-Directory")) {$KeyDirs = $KeyDirs.Where({$_ -imatch "$InFilter"})}
+   
+    #endregion
     
     #region Filter hash table file values
     $KeyDirs.ForEach({
-        $Dir = $_
-    
-        If ($OutFilterEnabled -eq $true){$DirIndex."$Dir" = $DirIndex."$Dir".Where({$_ -inotmatch "$OutFilter"})}
-        If ($InFilterEnabled -eq $true) {$DirIndex."$Dir" = $DirIndex."$Dir".Where({$_ -imatch "$InFilter"})}
+            $Dir = $_
+        
+            If (($OutFilterEnabled -eq $true) -and ($FSOType -eq "Directory")){$DirIndex."$Dir" = $DirIndex."$Dir".Where({$_ -inotmatch "$OutFilter"})}
+            If (($InFilterEnabled -eq $true) -and ($FSOType -eq "Directory")){$DirIndex."$Dir" = $DirIndex."$Dir".Where({$_ -imatch "$InFilter"})}
     
     }) 
     
@@ -508,50 +517,50 @@ Function Get-ExtendedAttributes {
     
     :KeyLoop Foreach ($Dir in $KeyDirs){
     
-    $Files = $DirIndex."$Dir"
-    
-    If ($Files.Count -eq 0){Continue KeyLoop}
-    
-    $Files.ForEach({
-    
-        $File = $_
-    
-        $FolderObj = $ShellObj.NameSpace($Dir)
-        $FileObj = $FolderObj.ParseName($File)
-    
-        If ($WriteProgress.IsPresent){Write-Progress -Activity "Retrieving Extended Attributes" -Status "Working on $Dir\$File" -PercentComplete ([int](($x / $FileCount) * 100))}
-    
-        $Object = New-Object System.Object
-    
-        Switch ($UseHelperFile.IsPresent){
-    
-        $True {
-    
-              $FileAttrs = $HelperHash."$(Get-FileExtension -FilePath $File)"
-    
-              If ($FileAttrs.Count -gt 0){$TargetColumns = $FileAttrs}
-              Else {$TargetColumns = $ValidColumns}
-    
-        }#Close True
-    
-        $False {$TargetColumns = $ValidColumns}
-
-        Default {$TargetColumns = $ValidColumns}
-    
-        }#Close Switch UserHelperFile.IsPresent
-    
-        $TargetColumns.ForEach({ 
-            
-            Try {$Object | Add-Member -ErrorAction Stop -Membertype Noteproperty -Name "$($AttrHash.$_)" -Value ($FolderObj.GetDetailsOf($FileObj, $_))}
-            Catch {$Object | Add-Member -ErrorAction Stop -Membertype Noteproperty -Name "$($AttrHash.$_)" -Value "-"; Continue}
+        $Files = $DirIndex."$Dir"
         
-            })
-    
-        $Results.Add($Object) | Out-Null
-    
-        $x++ 
-    
-        }) #Close Files.ForEach
+        If ($Files.Count -eq 0){Continue KeyLoop}
+        
+        $Files.ForEach({
+        
+                $File = $_
+            
+                $FolderObj = $ShellObj.NameSpace($Dir)
+                $FileObj = $FolderObj.ParseName($File)
+            
+                If ($WriteProgress.IsPresent){Write-Progress -Activity "Retrieving Extended Attributes" -Status "Working on $Dir\$File" -PercentComplete ([int](($x / $FileCount) * 100))}
+            
+                $Object = New-Object System.Object
+            
+                Switch ($UseHelperFile.IsPresent){
+            
+                $True {
+            
+                        $FileAttrs = $HelperHash."$(Get-FileExtension -FilePath $File)"
+                
+                        If ($FileAttrs.Count -gt 0){$TargetColumns = $FileAttrs}
+                        Else {$TargetColumns = $ValidColumns}
+                
+                        }#Close True
+                    
+                $False {$TargetColumns = $ValidColumns}
+
+                Default {$TargetColumns = $ValidColumns}
+            
+                }#Close Switch UserHelperFile.IsPresent
+            
+                $TargetColumns.ForEach({ 
+                    
+                    Try {$Object | Add-Member -ErrorAction Stop -Membertype Noteproperty -Name "$($AttrHash.$_)" -Value ($FolderObj.GetDetailsOf($FileObj, $_))}
+                    Catch {$Object | Add-Member -ErrorAction Stop -Membertype Noteproperty -Name "$($AttrHash.$_)" -Value "-"; Continue}
+                
+                    })
+            
+                $Results.Add($Object) | Out-Null
+            
+                $x++ 
+        
+            }) #Close Files.ForEach
     
     } #Close :KeyLoop
     
@@ -569,7 +578,7 @@ Function Get-ExtendedAttributes {
         #Report Exceptions, if specified
         If ($ReportAccessErrors.IsPresent -and $Exceptions.Count -gt 0){
              
-            switch (($ErrorOutFile.Length -gt 0)){
+            Switch (($ErrorOutFile.Length -gt 0)){
             
             $True {
     
@@ -581,7 +590,7 @@ Function Get-ExtendedAttributes {
     
                                 } #Close Catch
     
-            } #Close True
+                    }
     
             $False {$Exceptions.ForEach({Write-Error "$_"})}
     
@@ -592,8 +601,13 @@ Function Get-ExtendedAttributes {
       #endregion
         
     If ($OmitEmptyFields.IsPresent){
-       
-         #region Identify Unique Properties and preserve Property Order
+        
+        #region Identify Unique Properties and preserve Property Order
+        Switch ($FSOType){
+        
+        {$_ -eq "FSO-Directory"}{ 
+            #If it's a directory, we have a lot of work to do:
+
             $PropertiesHash = @{}
     
             #The fastest way to total up the number of properties:
@@ -615,20 +629,20 @@ Function Get-ExtendedAttributes {
             
             Remove-Variable TotalProps; &$ReclaimMemory
     
-        :LineLoop Foreach ($Line in $Results){
-    
-            $ObjProperties = $Line.psobject.Properties.Name
-    
-            Foreach ($Index in (0..$ObjProperties.GetUpperBound(0))){
-    
-                $Property = $ObjProperties[$Index]
-                
-                Try{[System.Collections.arraylist]$PropertyHashValues = $PropertiesHash."$Property"}
-                Catch {} #Suppress "Length" named property error
-                
-                  If ($null -eq $PropertyHashValues){$PropertiesHash.Add($Property,[system.collections.arraylist]@($Index))}
-                  
-                  Else{
+            :LineLoop Foreach ($Line in $Results){
+        
+                $ObjProperties = $Line.psobject.Properties.Name
+        
+                Foreach ($Index in (0..$ObjProperties.GetUpperBound(0))){
+        
+                    $Property = $ObjProperties[$Index]
+                    
+                    Try{[System.Collections.arraylist]$PropertyHashValues = $PropertiesHash."$Property"}
+                    Catch {} #Suppress "Length" named property error
+                    
+                    If ($null -eq $PropertyHashValues){$PropertiesHash.Add($Property,[system.collections.arraylist]@($Index))}
+                    
+                    Else{
                     
                     $PropertyHashValues.Add($Index) | Out-Null
                     
@@ -636,36 +650,48 @@ Function Get-ExtendedAttributes {
                     ($PropertyHashValues | Sort-Object -Unique -Descending).ForEach({$SortedValues.Add($_) | out-null})
                     
                     $PropertiesHash.Remove($Property) | out-null
-    
+
                     $PropertiesHash.Add($Property,$SortedValues)
-    
-                  }
-    
-                  If ($PropertiesHash.Count -eq $TotalPropsCount){break LineLoop} #As soon as we've encountered every possible property in $Results, break
-    
+
+                    }
+
+                    If ($PropertiesHash.Count -eq $TotalPropsCount){break LineLoop} #As soon as we've encountered every possible property in $Results, break
+        
                 } 
-    
-            }
-    
+        
+            } #Close Foreach Line in $Results
+        
             $PropertyArrangement = New-Object System.Collections.ArrayList
-    
+
             ($PropertiesHash.Keys).foreach({$PropertyArrangement.Add([pscustomobject]@{"Name" = $_; "Index" = $(($PropertiesHash.$_)[0])}) | Out-Null })
-    
+
             $AllProperties = ($PropertyArrangement | Sort-Object "Index").Name
-    
+
             $UsedProperties = New-Object System.Collections.ArrayList
-    
+
             Remove-Variable PropertiesHash,TotalPropsCount,PropertyArrangement -ErrorAction SilentlyContinue
             &$ReclaimMemory
-    
+
             $AllProperties.ForEach({
-    
-            $Property = $_
-    
-            If (($Results.Where({$_."$Property".Length -ne 0})).Count -gt 0){$UsedProperties.Add($Property) | Out-Null}
-    
+
+                $Property = $_
+
+                If (($Results.Where({$_."$Property".Length -ne 0})).Count -gt 0){$UsedProperties.Add($Property) | Out-Null}
+
             })
-    
+        
+            }
+
+            {($_ -eq "FSO-File") -or ($Results.Count -eq 1)}{  #If it's a single file, our work is much simpler
+        
+                $UsedProperties = New-Object System.Collections.ArrayList
+                
+                $Results[0].psobject.Properties.Name.ForEach({If ($Results[0].$_.Length -gt 0){$UsedProperties.Add($_) | out-null}})
+            
+            }
+
+        } #Close Switch
+
             #endregion Identify Unique Properties
     
             $Results = $Results | Select-Object $UsedProperties
@@ -954,6 +980,7 @@ GitHub: https://github.com/jross365/Get-ExtendedAttributes
         
 }
 
+#region Module Instructions
 New-Alias -Name gea -Value Get-ExtendedAttributes
 
 Export-ModuleMember -Function Get-Folders
@@ -976,3 +1003,5 @@ If (Test-Path $HelperFile){
     Write-Verbose "Helper File location: $HelperFile" -Verbose
 
 }
+
+#endregion
