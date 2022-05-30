@@ -66,11 +66,11 @@ GitHub: https://github.com/jross365/Get-ExtendedAttributes
 function Get-Folders {
     [CmdletBinding()] 
     param( 
-        [Parameter(Mandatory=$False)] [string]$Directory=((Get-Location).ProviderPath), 
-        [Parameter(Mandatory=$False)] [switch]$SuppressErrors,
-        [Parameter(Mandatory=$False)] [switch]$Recurse,
+        [Parameter(Mandatory=$False)][Alias('d')] [string]$Directory=((Get-Location).ProviderPath), 
+        [Parameter(Mandatory=$False)][Alias('q')] [switch]$SuppressErrors,
+        [Parameter(Mandatory=$False)][Alias('r')] [switch]$Recurse,
         [Parameter(Mandatory=$False)] [switch]$NoSort,
-        [Parameter(Mandatory=$False)] [switch]$IgnoreExclusions,
+        [Parameter(Mandatory=$False)][Alias('a')] [switch]$IgnoreExclusions,
         [Parameter(Mandatory=$False)] [switch]$IncludeRoot
         
     )
@@ -235,7 +235,7 @@ GitHub: https://github.com/jross365/Get-ExtendedAttributes
 
 #>
 Function Get-Files {
-param([string]$Directory,
+param([Alias('d')][string]$Directory,
 [switch]$ExcludeFullPath,
 [parameter(Position=2)][string]$Filter
 )
@@ -328,8 +328,8 @@ Function Get-ExtendedAttributes {
         [Parameter(Mandatory=$False,Position=0)] [string]$Path=((Get-Location).ProviderPath), 
         [Parameter(Mandatory=$False)] [switch]$Recurse,
         [Parameter(Mandatory=$False)] [switch]$WriteProgress,
-        [Parameter(ParameterSetName='HelperFile',Mandatory=$False)] [switch]$UseHelperFile,
-        [Parameter(ParameterSetName='HelperFile',Mandatory=$False)] [string]$HelperFilename="exthelper.json",
+        [Parameter(ParameterSetName='HelperFile',Mandatory=$False)][Alias('UseHelper')] [switch]$UseHelperFile,
+        [Parameter(ParameterSetName='HelperFile',Mandatory=$False)][Alias('HelperFile')] [string]$HelperFilename="exthelper.json",
         [Parameter(Mandatory=$False)] [array]$Exclude,
         [Parameter(Mandatory=$False)] [array]$Include,
         [Parameter(Mandatory=$False)][Alias('Clean')] [switch]$OmitEmptyFields,
@@ -345,7 +345,7 @@ Function Get-ExtendedAttributes {
     $FSOInfo = Get-Item $Path
     $Path = $FSOInfo.FullName #Protection against relative paths
 
-    If (($FSOInfo).Attributes -contains 'Directory'){$FSOType = "FSO-Directory"; $NameSpace = $Path}
+    If (($FSOInfo).Attributes -match 'Directory'){$FSOType = "FSO-Directory"; $NameSpace = $Path}
     Else {$FSOType = "FSO-File"; $NameSpace = $FSOInfo.Directory.FullName}
 
     If ($UseHelperFile.IsPresent){
@@ -406,7 +406,7 @@ Function Get-ExtendedAttributes {
     
     #region Enumerate Attribute Columns
     Try {$RootPath = $ShellObj.Namespace($NameSpace)}
-    Catch {throw "Unable to initialize Shell Application for namespace $Space"}
+    Catch {throw "Unable to initialize Shell Application for namespace $Namespace"}
     
     $AttrHash = @{}
     
