@@ -495,7 +495,7 @@ Function Get-ExtendedAttributes {
     $KeyDirs = $DirIndex.GetEnumerator().Name | Out-String -Stream
         
     If (($OutFilterEnabled -eq $true) -and ($FSOType -eq "FSO-Directory")){$KeyDirs = $KeyDirs.Where({$_ -inotmatch "$OutFilter"})}
-    #If (($InFilterEnabled -eq $true) -and ($FSOType -eq "FSO-Directory")) {$KeyDirs = $KeyDirs.Where({$_ -imatch "$InFilter"})}
+    #f (($InFilterEnabled -eq $true) -and ($FSOType -eq "FSO-Directory")) {$KeyDirs = $KeyDirs.Where({$_ -imatch "$InFilter"})}
    
     #endregion
     
@@ -503,8 +503,8 @@ Function Get-ExtendedAttributes {
     $KeyDirs.ForEach({
             $Dir = $_
         
-            If (($OutFilterEnabled -eq $true) -and ($FSOType -eq "Directory")){$DirIndex."$Dir" = $DirIndex."$Dir".Where({$_ -inotmatch "$OutFilter"})}
-            If (($InFilterEnabled -eq $true) -and ($FSOType -eq "Directory")){$DirIndex."$Dir" = $DirIndex."$Dir".Where({$_ -imatch "$InFilter"})}
+            If (($OutFilterEnabled -eq $true) -and ($FSOType -eq "FSO-Directory")){$DirIndex."$Dir" = $DirIndex."$Dir".Where({$_ -inotmatch "$OutFilter"})}
+            If (($InFilterEnabled -eq $true) -and ($FSOType -eq "FSO-Directory")){$DirIndex."$Dir" = $DirIndex."$Dir".Where({$_ -imatch "$InFilter"})}
     
     }) 
     
