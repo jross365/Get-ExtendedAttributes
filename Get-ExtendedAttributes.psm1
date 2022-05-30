@@ -60,7 +60,7 @@ C:\Users\User1\Desktop\Docs\Vehicle-Related\2021-08 Sunroof Claim
 C:\Users\User1\Desktop\Docs\Vehicle-Related\Door Damage
 
 .LINK
-GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+GitHub: https://github.com/jross365/Get-ExtendedAttributes
 
 #>
 function Get-Folders {
@@ -174,7 +174,7 @@ Get-FileExtension -FilePath ext.json
 Note: Actual output does not contain quotes ("").
 
 .LINK
-GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+GitHub: https://github.com/jross365/Get-ExtendedAttributes
 
 #>
 Function Get-FileExtension {
@@ -231,7 +231,7 @@ Get-Files -ExcludeFullPath .pdf
 Baked Chicken Wings - Seriously the BEST Crispy Baked Chicken Wings!.pdf
 
 .LINK
-GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+GitHub: https://github.com/jross365/Get-ExtendedAttributes
 
 #>
 Function Get-Files {
@@ -318,7 +318,7 @@ System.Collections.ArrayList. Get-ExtendedAttributes returns an arraylist of str
 Write-Host "Due to the complexity of this function and the possible use-cases and outputs, please see the GitHub documentation for examples.""
 
 .LINK
-GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+GitHub: https://github.com/jross365/Get-ExtendedAttributes
 
 #>
 Function Get-ExtendedAttributes {
@@ -704,7 +704,7 @@ System.Collections.ArrayList. Get-ExtendedAttributes returns an arraylist of str
 Write-Host "Due to the complexity of this function and the possible use-cases and outputs, please see the GitHub documentation for examples.""
 
 .LINK
-GitHub: https://github.com/jross365/Get-ExtendedFileAttributes
+GitHub: https://github.com/jross365/Get-ExtendedAttributes
 
 #>
     function New-AttrsHelperFile {
