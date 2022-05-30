@@ -343,6 +343,8 @@ Function Get-ExtendedAttributes {
     If (!(Test-Path -Path $Path)){throw "$Path is not a valid path"}
     
     $FSOInfo = Get-Item $Path
+    $Path = $FSOInfo.FullName #Protection against relative paths
+
     If (($FSOInfo).Attributes -contains 'Directory'){$FSOType = "FSO-Directory"; $NameSpace = $Path}
     Else {$FSOType = "FSO-File"; $NameSpace = $FSOInfo.Directory.FullName}
 
@@ -982,6 +984,8 @@ GitHub: https://github.com/jross365/Get-ExtendedAttributes
 
 #region Module Instructions
 New-Alias -Name gea -Value Get-ExtendedAttributes
+New-Alias -Name gtfo -Value Get-Folders
+New-Alias -Name gtfi -Value Get-Files
 
 Export-ModuleMember -Function Get-Folders
 Export-ModuleMember -Function Get-FileExtension
