@@ -39,11 +39,19 @@ C:\Program Files\WindowsPowerShell\Modules
 C:\Windows\system32\WindowsPowerShell\v1.0\Modules
 ```
 
-### Executing program
+### Importing the Module
 
 Import the module using the following command:
 
+```
+Import-Module Get-ExtendedAttributes
+```
+
 ![Import-Module](/.github/images/import-module.png)
+
+* **Note:** The module exports the path of a "Helper File" as variable $HelperFile. This is used to *greatly* improve the speed and efficiency of **gea**. Details on how to use the helper file are explained below.
+
+### Executing program
 
 Running the script is simple:
 
