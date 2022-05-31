@@ -6,7 +6,7 @@ Get-ExtendedAttributes (**gea**) is a Powershell module for accessing the extend
 
 The Get-ExtendedAttributes module provides functionality similar to the *Get-ChildItem* cmdlet. Instead of basic file attributes, however, **gea** enumerates and returns attributes not easily exposed to Powershell.
 
-These attributes include:
+**These attributes include:**
 
 * Video (*image/sound/combined bitrates, length, resolution, encoding, etc*)
 * Music (*bitrate, length, artist, album, title, track, etc*)
@@ -16,6 +16,9 @@ These attributes include:
 * Documents (*Due date, word count, last-printed, last-saved, classification, pages, etc*)
 
 * [And many more](https://stackoverflow.com/questions/22382010/what-options-are-available-for-shell32-folder-getdetailsof/62279888#62279888)
+
+![Example of Photo management](/images/photosexample.png)
+
 
 After completing, the function returns an [arraylist] of [pscustomobject] objects with the following properties:
 
