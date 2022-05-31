@@ -1,10 +1,23 @@
-# Get-ExtendedFileAttributes
+# Get-ExtendedAttributes
 
-A set of functions to efficiently enumerate extended file attributes
+Get-ExtendedAttributes (**gea**) is a Powershell module for accessing the extended attributes of files.
 
 ## Description
 
-The function contained in the PS-TraceRoute.ps1 Powershell script parses traceroute (tracert.exe) output. 
+The Get-ExtendedAttributes module provides functionality similar to the *Get-ChildItem* cmdlet.
+
+Instead of basic file attributes (like *Get-ChildItem* returns), **gea** enumerates and returns attributes not easily exposed to Powershell.
+
+These attributes include:
+
+* Video (*image/sound/combined bitrates, length, resolution, encoding, etc*)
+* Music (*bitrate, length, artist, album, title, track, etc*)
+* Image/EXIF (*resolution, camera information, focal length, ISO, orientation, etc*)
+* Contacts (*Name, address, street, phone number, email address, etc*)
+* Email (*To, From, Attachments, CC, BCC, send/received dates, subject, etc*)
+* Documents (*Due date, word count, last-printed, last-saved, classification, pages, etc*)
+
+* [And many more](https://stackoverflow.com/questions/22382010/what-options-are-available-for-shell32-folder-getdetailsof/62279888#62279888)
 
 After completing, the function returns an [arraylist] of [pscustomobject] objects with the following properties:
 
