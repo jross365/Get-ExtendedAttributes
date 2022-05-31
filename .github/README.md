@@ -1,7 +1,8 @@
 # Get-ExtendedAttributes
 
 Get-ExtendedAttributes (**gea**) is a Powershell module for accessing the extended attributes of files.
-(This documentation is work in progress, please be patient)
+
+(👷This documentation is an active work in progress👷)
 
 ## Description
 
