@@ -52,7 +52,7 @@ Import-Module Get-ExtendedAttributes
 * **Note:** The module exports the path of a "Helper File" as variable $HelperFile. This is used to *greatly* improve the speed and efficiency of **gea**. Details on how to use the helper file are explained below.
 
 ### 👷 Work In Progress! 👷
-Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed.
+Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/30/2022*)
 
 ### Executing program
 
