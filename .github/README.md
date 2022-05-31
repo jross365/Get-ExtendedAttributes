@@ -26,14 +26,24 @@ The Get-ExtendedAttributes module provides functionality similar to the *Get-Chi
 ### Dependencies
 
 **Get-ExtendedAttributes** has the following dependencies:
-* A Microsoft Windows operating system (Windows 7 or greater, Windows Server 2008 or greater)
+* Microsoft Windows OS (Windows 7 or greater, Windows Server 2008 or greater)
 * Windows Powershell (5.1+ recommended)
 
 
 ### Installing
-This script can be copied and run from any location, and has no installation prerequisites or path requirements.
+Save the *Get-ExtendedAttributes* folder to any one of these three folders:
+
+```
+C:\Users\<username>\Documents\WindowsPowerShell\Modules
+C:\Program Files\WindowsPowerShell\Modules        
+C:\Windows\system32\WindowsPowerShell\v1.0\Modules
+```
 
 ### Executing program
+
+Import the module using the following command:
+
+![Import-Module](/.github/images/import-module.png)
 
 Running the script is simple:
 
