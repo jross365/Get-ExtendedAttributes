@@ -4,9 +4,7 @@ Get-ExtendedAttributes (**gea**) is a Powershell module for accessing the extend
 
 ## Description
 
-The Get-ExtendedAttributes module provides functionality similar to the *Get-ChildItem* cmdlet.
-
-Instead of basic file attributes (like *Get-ChildItem* returns), **gea** enumerates and returns attributes not easily exposed to Powershell.
+The Get-ExtendedAttributes module provides functionality similar to the *Get-ChildItem* cmdlet. Instead of basic file attributes, however, **gea** enumerates and returns attributes not easily exposed to Powershell.
 
 These attributes include:
 
