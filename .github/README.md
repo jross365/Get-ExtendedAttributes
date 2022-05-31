@@ -17,7 +17,7 @@ The Get-ExtendedAttributes module provides functionality similar to the *Get-Chi
 
 * [And many more](https://stackoverflow.com/questions/22382010/what-options-are-available-for-shell32-folder-getdetailsof/62279888#62279888)
 
-![Example of Photo management](/images/photosexample.png)
+![Example of Photo management](/.github/images/photosexample.png)
 
 
 After completing, the function returns an [arraylist] of [pscustomobject] objects with the following properties:
