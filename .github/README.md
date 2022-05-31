@@ -1,6 +1,7 @@
 # Get-ExtendedAttributes
 
 Get-ExtendedAttributes (**gea**) is a Powershell module for accessing the extended attributes of files.
+(This documentation is work in progress, please be patient)
 
 ## Description
 
@@ -24,9 +25,9 @@ The Get-ExtendedAttributes module provides functionality similar to the *Get-Chi
 
 ### Dependencies
 
-PS-TraceRoute.ps1 has the following dependencies:
-* A Microsoft Windows operating system (Recommend Windows 7 or greater, Windows Server 2008 or greater)
-* Windows Powershell (5+ recommended)
+**Get-ExtendedAttributes** has the following dependencies:
+* A Microsoft Windows operating system (Windows 7 or greater, Windows Server 2008 or greater)
+* Windows Powershell (5.1+ recommended)
 
 
 ### Installing
@@ -66,6 +67,11 @@ I am the author.
 
 * 1.0 - Initial version.
     * It just works.
+
+## Known Issues
+* Strange/faulty behavior when working with files in UserProfile diectories (caused by NTUSER.DAT)
+* Some file attribute values obtained from internet or non-Windows sources contain odd/wrong characters
+    * I'm not convinced this is a problem with the module, but a future "helper" function may help fix these instances.
 
 ## License
 
