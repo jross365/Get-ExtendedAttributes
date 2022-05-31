@@ -8,26 +8,17 @@ The Get-ExtendedAttributes module provides functionality similar to the *Get-Chi
 
 **These attributes include:**
 
-* Video (*image/sound/combined bitrates, length, resolution, encoding, etc*)
-* Music (*bitrate, length, artist, album, title, track, etc*)
-* Image/EXIF (*resolution, camera information, focal length, ISO, orientation, etc*)
-* Contacts (*Name, address, street, phone number, email address, etc*)
-* Email (*To, From, Attachments, CC, BCC, send/received dates, subject, etc*)
-* Documents (*Due date, word count, last-printed, last-saved, classification, pages, etc*)
+* **Video** (image/sound/combined bitrates, length, resolution, encoding, etc)
+* **Music** (bitrate, length, artist, album, title, track, etc)
+* **Image/EXIF** (resolution, camera information, focal length, ISO, orientation, etc)
+* **Contacts** (Name, address, street, phone number, email address, etc)
+* **Email** (To, From, Attachments, CC, BCC, send/received dates, subject, etc)
+* **Documents** (Due date, word count, last-printed, last-saved, classification, pages, etc)
 
 * [And many more](https://stackoverflow.com/questions/22382010/what-options-are-available-for-shell32-folder-getdetailsof/62279888#62279888)
 
 ![Example of Photo management](/.github/images/photosexample.png)
 
-
-After completing, the function returns an [arraylist] of [pscustomobject] objects with the following properties:
-
-* Hop:  Interval of the next hop in the transmission path
-* RTT1: Round Trip Time of the first ICMP packet, in milliseconds (ms)
-* RTT2: Round Trip Time of the second ICMP packet, in milliseconds (ms)
-* RTT3: Round Trip Time of the third ICMP packet, in milliseconds (ms)
-* Hostname: The DNS-resolved hostname of the hop's routing device
-* IPAddress: The IP address of the hop's routing device
 
 ## Getting Started
 
