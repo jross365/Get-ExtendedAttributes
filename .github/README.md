@@ -49,7 +49,7 @@ Import the module using the following command:
 Import-Module Get-ExtendedAttributes
 ```
 
-* **Note:** The module exports the path of a "Helper File" as variable $HelperFile. This is used to *greatly* improve the speed and efficiency of **gea**. Details on how to use the helper file are explained below.
+**Note:** The module exports the path of a "Helper File" as variable $HelperFile. This is used to *greatly* improve the speed and efficiency of **gea**. Details on how to use the helper file are explained below.
 
 
 ### Using Get-ExtendedAttributes
@@ -131,13 +131,13 @@ The function **New-AttrsHelperFile** is a tool to create your own Helper File. T
 **gea** contains many parameters to enhance its functionality and applicability.
 
 
-### * **Path**
+### **Path**
 The path of the directory or file you wish to retrieve extended attributes from.
 
 This parameter is positional (*position 0*), and can be used without being named.
 
 
-### * **Recurse**
+### **Recurse**
 In cases where *-Path* is a directory, *-Recurse* will enumerate all subfolders and files within the provided path.
 
 If *-Path* specifies a filename, *-Recurse* is ignored.
@@ -180,11 +180,11 @@ Also as with *-Exclude*, *-Include* does not respect asterisks.
 
 
 ### **OmitEmptyFields**
-Instructs the function to remove all columns in the resultant data which do not contain any values. *-Clean* is an alias of *-OmitEmptyFields*.
+Instructs the function to remove all columns in the resultant data which do not contain any values. 
 
 For example, a set of values that looks like this:
 
-| Name  | address | Street | Phone Number   | Email Address | 
+| Name  | Address | Street | Phone Number   | Email Address | 
 | ----- |-------- | ------ | -------------- | ------------- |
 | John  | 123 st  |        |                |               |
 | Jake  |         |        |                | no@ip.org     |
@@ -192,22 +192,25 @@ For example, a set of values that looks like this:
 
 Would be reduced to these fields:
 
-| Name  | address | Email Address | 
+| Name  | Address | Email Address | 
 | ----- |-------- | ------------- |
 | John  | 123 st  |               |
 | Jake  |         | no@ip.org     |
 |       | 3rd ave.| yep@nope.com  |
 
+**Note**: *-Clean* is an alias of *-OmitEmptyFields*.
+
 This operation can take a lot of time, depending on how many files reside in the dataset.
 
-As with the attribute lookups, the Helper File also reduces the number of possible empty fields. For this reason, it is *strongly* recommended that a Helper File be used when using *-OmitEmptyFields*.
+As with attribute lookups, the Helper File also reduces the number of possible empty fields. For this reason, it is *strongly* recommended that a Helper File be used when using *-OmitEmptyFields*.
 
 
 ### **ReportAccessErrors**
+Reports all "Access Denied" errors to the console after the resultant data has been processed. Error reporting does not impact enumeration against files that were accessible.
 
+### **ErrorOutFile**
+Instructs the function to send errors to a designated text file instead of to the console. 
 
-### 👷 Work In Progress!
-Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/31/2022*)
 
 ## Help
 
@@ -219,6 +222,10 @@ The function contains an If statement to do exactly this:
 ```
 If ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne $null){throw "traceroute returned LastExitCode $LASTEXITCODE"}
 ```
+
+
+### 👷 Work In Progress!
+Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/31/2022*)
 
 ## Authors
 
