@@ -55,14 +55,22 @@ Import-Module Get-ExtendedAttributes
 ### 👷 Work In Progress! 👷
 Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/30/2022*)
 
-### Executing program
+### Using Get-ExtendedAttributes
 
-Running the script is simple:
+* Running the script is simple:
 
-* Import the function:
 ```
-. .\PS-TraceRoute.ps1
+Get-ExtendedAttributes
 ```
+![Get-ExtendedAttributes](/.github/images/get-extendedattributes.png)
+
+Alternatively, you can use the alias **gea**
+
+```
+gea
+```
+![gea](/.github/images/gea.png)
+
 
 * Run the function (example stores results in $RouteResults variable):
 ```
