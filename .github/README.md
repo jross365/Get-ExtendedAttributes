@@ -66,7 +66,7 @@ gea
 ```
 
 
-## Using it *effectively* (The Helper File)
+## The Helper File
 
 **gea** is very quick when run without additional parameters for one or a small number of files.
 
@@ -105,19 +105,26 @@ Get-ExtendedAttributes -UseHelperFile -HelperFileName $HelperFile
 
 ### How much *does* the Helper File actually improve performance?
 
-That's a fair question. Let's take a look:
+That's a fair question. Here's a test against 410 files:
+
+![HelperFile Speed](/.github/images/helperfilespeed.png)
+
+* **Without Helper File:** 83 seconds, ~4.94 files/sec
+* **With Helper File:**    10 seconds, ~41   files/sec
+
+That's a difference of **8 time** faster when using the Helper File!
 
 
 ### How to make your own Helper File
 
 If you have a unique or specific set of file types that aren't included in the provided set, I have included a function so you can do this yourself.
 
-The function **New-AttrsHelperFile** is a tool to "roll-your-own" Helper File. There is more on how to use this tool below.
+The function **New-AttrsHelperFile** is a tool to create your own Helper File. There is more on how to use this tool below.
 
 
-### 👷 Work In Progress! 👷
+### 👷 Work In Progress!
 Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/30/2022*)
-
+###    Work In Progress! 👷
 
 ## Help
 
