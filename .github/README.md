@@ -117,7 +117,7 @@ That's a difference of **8 time** faster when using the Helper File!
 
 ### How to make your own Helper File
 
-If you have a unique or specific set of file types that aren't included in the provided set, I have included a function so you can do this yourself.
+If you have a unique or specific set of file types that aren't included in the provided set, I have included a function so you can create your own Helper File.
 
 The function **New-AttrsHelperFile** is a tool to create your own Helper File. There is more on how to use this tool below.
 
