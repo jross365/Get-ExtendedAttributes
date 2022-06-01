@@ -46,8 +46,6 @@ Get-Folders C:\Users\User1\Desktop\Docs -Recurse
 C:\Users\User1\Desktop\Docs\Financial
 C:\Users\User1\Desktop\Docs\Financial\Collections Dispute
 C:\Users\User1\Desktop\Docs\Job Seeking
-C:\Users\User1\Desktop\Docs\Job Seeking\2020-2022 Resume Work
-C:\Users\User1\Desktop\Docs\Job Seeking\2020-2022 Resume Work\Previous Resumes
 C:\Users\User1\Desktop\Docs\Job Seeking\Archive
 C:\Users\User1\Desktop\Docs\Job Seeking\Personal Info
 C:\Users\User1\Desktop\Docs\OBS Profiles
@@ -56,7 +54,6 @@ C:\Users\User1\Desktop\Docs\Personal
 C:\Users\User1\Desktop\Docs\Recipes
 C:\Users\User1\Desktop\Docs\Vehicle-Related
 C:\Users\User1\Desktop\Docs\Vehicle-Related\2011 Service Manual
-C:\Users\User1\Desktop\Docs\Vehicle-Related\2021-08 Sunroof Claim
 C:\Users\User1\Desktop\Docs\Vehicle-Related\Door Damage
 
 .LINK

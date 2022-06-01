@@ -48,9 +48,8 @@ Import the module using the following command:
 Import-Module Get-ExtendedAttributes
 ```
 
-![Import-Module](/.github/images/import-module.png)
-
 * **Note:** The module exports the path of a "Helper File" as variable $HelperFile. This is used to *greatly* improve the speed and efficiency of **gea**. Details on how to use the helper file are explained below.
+
 
 ### Using Get-ExtendedAttributes
 
@@ -59,23 +58,22 @@ Import-Module Get-ExtendedAttributes
 ```
 Get-ExtendedAttributes
 ```
-![Get-ExtendedAttributes](/.github/images/get_extendedattributes.png)
 
 Alternatively, you can use the alias **gea**
 
 ```
 gea
 ```
-![gea](/.github/images/g_ea.png)
 
 
-## Using Get-ExtendedAttributes *effectively* (The Helper File)
+## Using it *effectively* (The Helper File)
 
 **gea** is very quick when run without additional parameters for one or a small number of files.
 
-In cases where there are a *large* number of files, the time it takes to query 500 attributes for a very large number files can cause **gea** to take a *very* long time to complete.
+In cases where there are a *large* number of files, the time it takes to query 500 attributes can cause **gea** to take a *very* long time to complete.
 
 Thankfully, there's a clever solution to this problem.
+
 
 ### Understanding the Helper File
 
@@ -85,9 +83,11 @@ The Helper File is simply a JSON file called *exthelper.json*. It contains Keys 
 
 Instead of querying 500 attributes, when using the Helper File it will only query 30-40 (depending on the file type). This improves **gea**'s performance substantially.
 
+
 ### Where to get the Helper File
 
 I have included a Helper File with the module that contains 315 extensions. This was generated from files on my systems and storage, and works perfectly (for me).
+
 
 ### How to use the Helper File
 
@@ -95,23 +95,24 @@ I have included a Helper File with the module that contains 315 extensions. This
 
 ![Import-Module](/.github/images/import-module.png)
 
-* When running **gea**, use the following parameter and value to make use of the helper file:
+* When running **gea**, use the following parameters to use the helper file:
 
 ```
 Get-ExtendedAttributes -UseHelperFile -HelperFileName $HelperFile
 ```
-
-![Use Helper File](/.github/images/usehelperfile.png)
-
 **Note:** 👷 I realize how redundant it is to have a switch and an input variable for a single purpose. I will simplify this in the future 👷
 
+
+### How much *does* the Helper File actually improve performance?
+
+That's a fair question. Let's take a look:
 
 
 ### How to make your own Helper File
 
 If you have a unique or specific set of file types that aren't included in the provided set, I have included a function so you can do this yourself.
 
-The function **New-AttrsHelperFile** is the tool to "roll-your-own" Helper File. There is more on how to use this tool below.
+The function **New-AttrsHelperFile** is a tool to "roll-your-own" Helper File. There is more on how to use this tool below.
 
 
 ### 👷 Work In Progress! 👷
