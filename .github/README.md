@@ -40,6 +40,7 @@ C:\Program Files\WindowsPowerShell\Modules
 C:\Windows\system32\WindowsPowerShell\v1.0\Modules
 ```
 
+
 ### Importing the Module
 
 Import the module using the following command:
@@ -95,11 +96,12 @@ I have included a Helper File with the module that contains 315 extensions. This
 
 ![Import-Module](/.github/images/import-module.png)
 
-* When running **gea**, use the following parameters to use the helper file:
+* When running **gea**, use the following parameters to use the Helper File:
 
 ```
 Get-ExtendedAttributes -UseHelperFile -HelperFileName $HelperFile
 ```
+
 **Note:** 👷 I realize how redundant it is to have a switch and an input variable for a single purpose. I will simplify this in the future 👷
 
 
@@ -107,7 +109,7 @@ Get-ExtendedAttributes -UseHelperFile -HelperFileName $HelperFile
 
 That's a fair question. Here's a test against 410 files:
 
-![HelperFile Speed](/.github/images/helperfilespeed.png)
+![HelperFile Speed](/.github/images/helperspeed.png)
 
 * **Without Helper File:** 83 seconds, ~4.94 files/sec
 * **With Helper File:**    10 seconds, ~41   files/sec
