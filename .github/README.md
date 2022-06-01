@@ -111,21 +111,24 @@ That's a fair question. Here's a test against 410 files:
 
 ![HelperFile Speed](/.github/images/helperspeed.png)
 
-* **Without Helper File:** 83 seconds, ~4.94 files/sec
-* **With Helper File:**    10 seconds, ~41   files/sec
 
-That's a difference of **8 time** faster when using the Helper File!
+| Without Helper| With Helper   |
+| ------------- | ------------- |
+| 83 seconds    | 10 seconds    |
+| 4.94 files/sec| 41 files/sec  |
+
+That's a difference of **8 times** faster when using the Helper File!
 
 
 ### How to make your own Helper File
 
-If you have a unique or specific set of file types that aren't included in the provided set, I have included a function so you can create your own Helper File.
+If you have a unique or specific set of file types that aren't included in the provided set, I have included a function to create your own Helper File.
 
 The function **New-AttrsHelperFile** is a tool to create your own Helper File. There is more on how to use this tool below.
 
 
 ### 👷 Work In Progress!
-Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/30/2022*)
+Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/31/2022*)
 ###    Work In Progress! 👷
 
 ## Help
