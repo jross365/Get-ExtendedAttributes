@@ -62,7 +62,7 @@ Everything below this point is in the process of being written. Please check in 
 ```
 Get-ExtendedAttributes
 ```
-![Get-ExtendedAttributes](/.github/images/get_-_extendedattributes.png)
+![Get-ExtendedAttributes](/.github/images/get_extendedattributes.png)
 
 Alternatively, you can use the alias **gea**
 
