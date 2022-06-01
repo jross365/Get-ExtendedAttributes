@@ -52,12 +52,9 @@ Import-Module Get-ExtendedAttributes
 
 * **Note:** The module exports the path of a "Helper File" as variable $HelperFile. This is used to *greatly* improve the speed and efficiency of **gea**. Details on how to use the helper file are explained below.
 
-### 👷 Work In Progress! 👷
-Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/30/2022*)
-
 ### Using Get-ExtendedAttributes
 
-* Running the script is simple:
+* Running the function is simple:
 
 ```
 Get-ExtendedAttributes
@@ -72,10 +69,53 @@ gea
 ![gea](/.github/images/g_ea.png)
 
 
-* Run the function (example stores results in $RouteResults variable):
+## Using Get-ExtendedAttributes *effectively* (The Helper File)
+
+**gea** is very quick when run without additional parameters for one or a small number of files.
+
+In cases where there are a *large* number of files, the time it takes to query 500 attributes for a very large number files can cause **gea** to take a *very* long time to complete.
+
+Thankfully, there's a clever solution to this problem.
+
+### Understanding the Helper File
+
+The Helper File is simply a JSON file called *exthelper.json*. It contains Keys (file extensions) and Values (applicable attributes for each file extension).
+
+**gea** uses this file to limit the attribute retrievals to *only* attributes that are used by specific file types.
+
+Instead of querying 500 attributes, when using the Helper File it will only query 30-40 (depending on the file type). This improves **gea**'s performance substantially.
+
+### Where to get the Helper File
+
+I have included a Helper File with the module that contains 315 extensions. This was generated from files on my systems and storage, and works perfectly (for me).
+
+### How to use the Helper File
+
+* If present when importing the module, the path to the Helper File is automatically assigned to the variable *$HelperFile*:
+
+![Import-Module](/.github/images/import-module.png)
+
+* When running **gea**, use the following parameter and value to make use of the helper file:
+
 ```
-$RouteResults = Trace-Route -Destination <IPAddress>
+Get-ExtendedAttributes -UseHelperFile -HelperFileName $HelperFile
 ```
+
+![Use Helper File](/.github/images/usehelperfile.png)
+
+**Note:** 👷 I realize how redundant it is to have a switch and an input variable for a single purpose. I will simplify this in the future 👷
+
+
+
+### How to make your own Helper File
+
+If you have a unique or specific set of file types that aren't included in the provided set, I have included a function so you can do this yourself.
+
+The function **New-AttrsHelperFile** is the tool to "roll-your-own" Helper File. There is more on how to use this tool below.
+
+
+### 👷 Work In Progress! 👷
+Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/30/2022*)
 
 
 ## Help
