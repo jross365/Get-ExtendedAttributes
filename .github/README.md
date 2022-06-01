@@ -129,7 +129,6 @@ The function **New-AttrsHelperFile** is a tool to create your own Helper File. T
 
 ### 👷 Work In Progress!
 Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/31/2022*)
-###    Work In Progress! 👷
 
 ## Help
 
