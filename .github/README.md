@@ -126,6 +126,85 @@ If you have a unique or specific set of file types that aren't included in the p
 
 The function **New-AttrsHelperFile** is a tool to create your own Helper File. There is more on how to use this tool below.
 
+## Parameters
+
+**gea** contains many parameters to enhance its functionality and applicability.
+
+
+* **Path**
+The path of the directory or file you wish to retrieve extended attributes from.
+
+This parameter is positional (*position 0*), and can be used without being named.
+
+
+* **Recurse**
+In cases where *-Path* is a directory, *-Recurse* will enumerate all subfolders and files within the provided path.
+
+If *-Path* specifies a filename, *-Recurse* is ignored.
+
+
+* **WriteProgress**
+Displays a progress bar to support your mental health and welfare.
+
+The progress bar reports which file it's enumerating attributes for, and displays the overall file progress.
+
+
+* **UseHelperFile**
+Instructs the function to use a helper file.
+
+* **HelperFileName**
+Provides the function with the path of the helper file to use.
+
+**Note:** *-UserHelperFile* and *-HelperFileName* will be consolidated into a single parameter in the future (*soon!*).
+
+
+* **Exclude**
+Applies an exclusionary ("*where not match*") filter on subfolders and files. If *-Path* is a file, *-Exclude* is ignored.
+
+To specify more than one filter, comma-separate the strings you'd like to exclude.
+
+This example excludes all files and folders containing ".png" or ".ps1" anywhere in the filename:
+
+```
+$N = Get-ExtendedAttributes -Exclude .png,.ps1
+```
+**Note:** *-Exclude* does not respect asterisks. If there's a desire to use asterisks for filtering, ask and I'll write the feature in. (*Or do it yourself, it's open source!*)
+
+
+* **Include**
+Applies an inclusionary ("*where match*") filter **for files only**. If *-Path* is a file, *-Include* is ignored.
+
+As with *-Exclude*, you can comma-separate multiple strings you'd like to include. 
+
+Also as with *-Exclude*, *-Include* does not respect asterisks.
+
+
+* **OmitEmptyFields**
+Instructs the function to remove all columns in the resultant data which do not contain any values. *-Clean* is an alias of *-OmitEmptyFields*.
+
+For example, a set of values that looks like this:
+
+| Name  | address | Street | Phone Number   | Email Address | 
+| ----- |-------- | ------ | -------------- | ------------- |
+| John  | 123 st  |        |                |               |
+| Jake  |         |        |                | no@ip.org     |
+|       | 3rd ave.|        |                | yep@nope.com  |
+
+Would be reduced to these fields:
+
+| Name  | address | Email Address | 
+| ----- |-------- | ------------- |
+| John  | 123 st  |               |
+| Jake  |         | no@ip.org     |
+|       | 3rd ave.| yep@nope.com  |
+
+This operation can take a lot of time, depending on how many files reside in the dataset.
+
+As with the attribute lookups, the Helper File also reduces the number of possible empty fields. For this reason, it is *strongly* recommended that a Helper File be used when using *-OmitEmptyFields*.
+
+
+* **ReportAccessErrors**
+
 
 ### 👷 Work In Progress!
 Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/31/2022*)
