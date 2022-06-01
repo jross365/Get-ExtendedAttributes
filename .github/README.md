@@ -122,9 +122,9 @@ That's a difference of **8 times** faster when using the Helper File!
 
 ### How to make your own Helper File
 
-If you have a unique or specific set of file types that aren't included in the provided set, I have included a function to create your own Helper File.
+If you have a unique or specific set of file types that aren't included in the provided set, I have included a function to create your own Helper File (**New-AttrsHelperFile**)
 
-The function **New-AttrsHelperFile** is a tool to create your own Helper File. There is more on how to use this tool below.
+Details on how to use this tool are written in a section below.
 
 ## Parameters
 
@@ -211,6 +211,26 @@ Reports all "Access Denied" errors to the console after the resultant data has b
 ### **ErrorOutFile**
 Instructs the function to send errors to a designated text file instead of to the console. 
 
+
+## Other Module Functions
+If **gea** is the star of the show, then there's also a supporting cast. Without them, the show wouldn't be possible.
+
+This section briefly covers the other functions included in this Powershell module.
+
+### **Get-Folders**
+*Get-Folders* (and *Get-Files*) was written to fulfill three requirements:
+
+* Fast enumeration and simple/flat output of files and folders
+* Avoid enumerating attributes for the sake of efficiency
+    * These two requirements rule out *Get-ChildItem*
+
+*  Maintain all code within native Powershell/.Net Framework 
+    * This rules out the cmd.exe "*dir*" command, which is fast but would require a wrapper function.
+
+
+
+
+* To avoid the command line "*dir*" command, which is very fast but isn't 
 
 ## Help
 
