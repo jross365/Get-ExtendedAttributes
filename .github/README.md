@@ -62,14 +62,14 @@ Everything below this point is in the process of being written. Please check in 
 ```
 Get-ExtendedAttributes
 ```
-![Get-ExtendedAttributes](/.github/images/get-extendedattributes.png)
+![Get-ExtendedAttributes](/.github/images/get_-_extendedattributes.png)
 
 Alternatively, you can use the alias **gea**
 
 ```
 gea
 ```
-![gea](/.github/images/gea.png)
+![gea](/.github/images/g_ea.png)
 
 
 * Run the function (example stores results in $RouteResults variable):
