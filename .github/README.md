@@ -131,13 +131,13 @@ The function **New-AttrsHelperFile** is a tool to create your own Helper File. T
 **gea** contains many parameters to enhance its functionality and applicability.
 
 
-### **Path**
+### * **Path**
 The path of the directory or file you wish to retrieve extended attributes from.
 
 This parameter is positional (*position 0*), and can be used without being named.
 
 
-### **Recurse**
+### * **Recurse**
 In cases where *-Path* is a directory, *-Recurse* will enumerate all subfolders and files within the provided path.
 
 If *-Path* specifies a filename, *-Recurse* is ignored.
