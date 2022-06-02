@@ -202,7 +202,7 @@ Would be reduced to these fields:
 
 **Note**: *-Clean* is an alias of *-OmitEmptyFields*.
 
-This operation can take a lot of time, depending on how many files reside in the dataset.
+This operation can take a lot of time, depending on how many files and specifie attributes reside in the dataset.
 
 As with attribute lookups, the Helper File also reduces the number of possible empty fields. For this reason, it is *strongly* recommended that a Helper File be used when using *-OmitEmptyFields*.
 
@@ -214,21 +214,23 @@ Reports all "Access Denied" errors to the console after the resultant data has b
 Instructs the function to send errors to a designated text file instead of to the console. 
 
 
-## Other Module Functions
+# Other Module Functions
 If **gea** is the star of the show, then there's also a supporting cast. Without them, the show wouldn't be possible.
 
 This section briefly covers the other functions included in this Powershell module.
 
-### **Rationale**
-* I wrote **Get-Folders** and **Get-Files** to fulfill three requirements:
+## **Reinventing the Wheel?**
+When considering how to enumerate files and folders, I started with these three requirements.
 
-* Fast enumeration and simple/flat output of files and folders
-* Avoid enumerating attributes for the sake of efficiency
-*  Maintain all code within native Powershell/.NET Framework 
+1. Faster enumeration and simple/flat output of files and folders
+2. Avoid enumerating attributes for the sake of efficiency
+3.  Maintain all code within native Powershell/.NET Framework 
 
-The first two requirements rule out *Get-ChildItem*, because **gci** is notoriously slow as a result and enumerates attributes, which I was explicitly trying to avoid.
+The first two requirements rule out *Get-ChildItem*, because **gci** is notoriously slow and enumerates attributes, which I was explicitly trying to avoid. And the last requirement rules out the cmd.exe "*dir.exe*" command, which is very fast but would require a wrapper function.
 
-The last requirement rules out the cmd.exe "*dir.exe*" command, which is very fast but would require a wrapper function.
+This left no "*off-the-shelf*" options (that I'm aware of), and I didn't want to borrow someone else's code. So I wrote **Get-Folders** and **Get-Files**.
+
+## **Get-Folders**
 
 
 
