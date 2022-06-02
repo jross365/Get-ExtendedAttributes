@@ -92,10 +92,12 @@ The progress bar reports which file it's enumerating attributes for, and display
 
 
 ### **UseHelperFile**
-Instructs the function to use a helper file.
+Instructs the function to use a Helper File.
+
+Details about what a Helper File is and how to use it are written in the **Helper File** section below.
 
 ### **HelperFileName**
-Provides the function with the path of the helper file to use.
+Provides the function with the path of the Helper File to use.
 
 **Note:** *-UserHelperFile* and *-HelperFileName* will be consolidated into a single parameter in the future (*soon!*).
 
@@ -211,7 +213,7 @@ That's a difference of **8 times** faster when using the Helper File!
 
 If you have a unique or specific set of file types that aren't included in the provided set, I have included a function to create your own Helper File (**New-AttrsHelperFile**)
 
-Details on how to use this tool are written in a section below.
+Details on how to use this tool are written in the **Other Functions** section below.
 
 # Other Module Functions
 If **gea** is the star of the show, then there's also a supporting cast. Without them, the show wouldn't be possible.
@@ -230,7 +232,7 @@ The first two requirements rule out *Get-ChildItem*, because **gci** is notoriou
 This left no "*off-the-shelf*" options (that I'm aware of), and I didn't want to borrow someone else's code. So I wrote **Get-Folders** and **Get-Files**.
 
 ## **Get-Folders**
-
+**Get-Folders** 
 
 
 ## Help
