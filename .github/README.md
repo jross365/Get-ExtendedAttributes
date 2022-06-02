@@ -1,12 +1,10 @@
-# Get-ExtendedAttributes
+# Get-ExtendedAttributes (**gea**)
 
-Get-ExtendedAttributes (**gea**) is a Powershell module for accessing the extended attributes of files.
-
-(👷This documentation is an active work in progress👷)
+Get-ExtendedAttributes is a Powershell module for accessing the extended attributes of files.
 
 ## Description
 
-The Get-ExtendedAttributes module provides functionality similar to the *Get-ChildItem* cmdlet. Instead of basic file attributes, however, **gea** enumerates and returns attributes not easily exposed to Powershell.
+This module provides functionality similar to the *Get-ChildItem* cmdlet. Instead of basic file attributes, however, **gea** enumerates and returns attributes not easily exposed to Powershell.
 
 **These attributes include:**
 
@@ -144,7 +142,7 @@ Would be reduced to these fields:
 
 **Note**: *-Clean* is an alias of *-OmitEmptyFields*.
 
-This operation can take a lot of time, depending on how many files and specifie attributes reside in the dataset.
+This operation can take a lot of time, depending on how many files and specified attributes reside in the dataset.
 
 As with attribute lookups, the Helper File also reduces the number of possible empty fields. For this reason, it is *strongly* recommended that a Helper File be used when using *-OmitEmptyFields*.
 
@@ -194,7 +192,7 @@ Get-ExtendedAttributes -UseHelperFile -HelperFileName $HelperFile
 **Note:** 👷 I realize how redundant it is to have a switch and an input variable for a single purpose. I will simplify this in the future 👷
 
 
-### How much *does* the Helper File actually improve performance?
+### How much *does* it actually help?
 
 That's a fair question. Here's a test against 410 files:
 
@@ -209,11 +207,11 @@ That's a fair question. Here's a test against 410 files:
 That's a difference of **8 times** faster when using the Helper File!
 
 
-### How to make your own Helper File
+### How to make your own
 
 If you have a unique or specific set of file types that aren't included in the provided set, I have included a function to create your own Helper File (**New-AttrsHelperFile**)
 
-Details on how to use this tool are written in the **Other Functions** section below.
+Details on how to use this tool are outlined in the **Other Functions** section below.
 
 # Other Functions
 If **gea** is the star of the show, then there's also a supporting cast. Without them, the show wouldn't be possible.
@@ -231,8 +229,8 @@ The first two requirements rule out *Get-ChildItem*, because **gci** is notoriou
 
 This left no "*off-the-shelf*" options (that I'm aware of), and I didn't want to borrow someone else's code. So I wrote **Get-Folders** and **Get-Files**.
 
-## **Get-Folders**
-**Get-Folders** is a function that enumerates directories in a provided path, and can do so recursively. **gfo** is an alias of **Get-Folders**.
+## **Get-Folders** (gfo)
+A function that enumerates directories in a provided path, and can do so recursively.
 
 ### Using Get-Folders
 
@@ -279,7 +277,7 @@ Specifying *-IgnoreExclusions* will include directory paths with the strings lis
 Adds the "root" (*-Directory*) directory to the returned list of discovered directories/subdirectories.
 
 
-## **Get-Files**
+## **Get-Files** (gfi)
 A function that enumerates files in a specified path.
 
 **Note: Get-Files** does not operate recursively.
@@ -348,7 +346,7 @@ The name or path of the file.
 
 
 ## **New-AttrsHelperFile**
-AW function that analyzes CSV files with contents created by **gea** to generate a new Helper File.
+A function that analyzes CSV files with contents created by **gea** to generate a new Helper File.
 
 You may want to create a new helper file if your use-case for this module applies to files whose extensions aren't included in the provided *extHelper.json* file.
 
@@ -411,36 +409,52 @@ To support your mental health and welfare.
 Reports on the overall progress, the extension it's analyzing, the extension progress, and the file whose attributes its analyzing.
 
 
-
-
 ## Help
+Notes and comments regarding all things involving the word "help"
 
-I haven't encountered any problems with this function, more than likely due to its simplicity.
+### Powershell Help
+Every function in this module has a full-featured Comment-Based Help (CBH) header.
 
-Because tracert.exe uses the standard Windows command line error handler, the cleanest and simplest way to check the success/fail status of tracert.exe is by looking at the $LASTEXITCODE variable.
+You can run the **Get-Help** command to see more information about parameters, aliases, examples, etc.
 
-The function contains an If statement to do exactly this:
+To view the full help manifest for Get-ExtendedAttributes, for example:
 ```
-If ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne $null){throw "traceroute returned LastExitCode $LASTEXITCODE"}
+Get-Help Get-ExtendedAttributes -Full
 ```
 
+### Reporting Bugs
+With the size and complexity of this module, there are undoubtedly bugs and problems in the code. I try to fix things as soon as I identify a problem, but that's often easier said than done.
 
-### 👷 Work In Progress!
-Everything below this point is in the process of being written. Please check in periodically for updates as this documentation is created and completed. (*Last Update: 05/31/2022*)
-
-## Authors
-
-I am the author.
-
-## Version History
-
-* 1.0 - Initial version.
-    * It just works.
+If you encounter a bug, please report it. Let me know exactly how you encountered it, including relevant conditions, parameter input and console output.
 
 ## Known Issues
 * Strange/faulty behavior when working with files in UserProfile diectories (caused by NTUSER.DAT)
 * Some file attribute values obtained from internet or non-Windows sources contain odd/wrong characters
     * I'm not convinced this is a problem with the module, but a future "helper" function may help fix these instances.
+* Fix **gfo** "trailing-slash" bug
+    * This doesn't effect the module functionality, but it's an easy bug to squash
+
+**To-Dos:**
+This is a list of enhancements and improvements on my agenda:
+
+* Reduce **gea** "Helper File" parameters to a single parameter
+* Optimize/rewrite the supporting code behind the *-OmitEmptyFields* parameter
+    * I need to figure out the fastest way to isolate unique, unused properties
+* Write some "example scripts" to demo the module
+* Create a .psd1 for version tracking and Powershell/.NET CLR version enforcement
+* Apply Powershell 7.1 **foreach -parallel** functionality
+    * This code is badly bottlenecked by single-threaded performance
+    * Parallelizing it would add a tremendous performance enhancement
+
+
+## Authors
+
+I am the author. If you would like to contact me for any reason, you can reach me at [this email address](mailto:jross365github@gmail.com).
+
+## Version History
+
+* 1.0 - Initial public version.
+    * Pretty Spiffy
 
 ## License
 

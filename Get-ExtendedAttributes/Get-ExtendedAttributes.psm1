@@ -21,6 +21,9 @@ If specified, will recursively enumerate all subdirectories nested in the root d
 .PARAMETER NoSort
 If specified, enumerated directories will be returned out-of-order. This improves the function's performance.
 
+.PARAMETER IgnoreExclusions
+If specified, will include subdirectory search in FileHistory, Windows, Recycle Bin and '@' directories.
+
 .PARAMETER IncludeRoot
 If specified, the directories returned will include the top-level (root) directory.
 
