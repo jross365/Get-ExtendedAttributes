@@ -428,13 +428,14 @@ With the size and complexity of this module, there are undoubtedly bugs and prob
 If you encounter a bug, please report it. Let me know exactly how you encountered it, including relevant conditions, parameter input and console output.
 
 ## Known Issues
-* Strange/faulty behavior when working with files in UserProfile diectories (caused by NTUSER.DAT)
-* Some file attribute values obtained from internet or non-Windows sources contain odd/wrong characters
+* Strange/faulty behavior when working with files in UserProfile directories (caused by NTUSER.DAT)
+* Some file attribute values obtained from internet or non-Windows sources contain odd characters (thin arrows)
     * I'm not convinced this is a problem with the module, but a future "helper" function may help fix these instances.
+    * The char values are in the 8000s, so it's an easy problem to sanitize
 * Fix **gfo** "trailing-slash" bug
     * This doesn't effect the module functionality, but it's an easy bug to squash
 
-**To-Dos:**
+## To-Dos:
 This is a list of enhancements and improvements on my agenda:
 
 * Reduce **gea** "Helper File" parameters to a single parameter
