@@ -215,7 +215,7 @@ If you have a unique or specific set of file types that aren't included in the p
 
 Details on how to use this tool are written in the **Other Functions** section below.
 
-# Other Module Functions
+# Other Functions
 If **gea** is the star of the show, then there's also a supporting cast. Without them, the show wouldn't be possible.
 
 This section briefly covers the other functions included in this Powershell module.
@@ -232,7 +232,114 @@ The first two requirements rule out *Get-ChildItem*, because **gci** is notoriou
 This left no "*off-the-shelf*" options (that I'm aware of), and I didn't want to borrow someone else's code. So I wrote **Get-Folders** and **Get-Files**.
 
 ## **Get-Folders**
-**Get-Folders** 
+**Get-Folders** is a function that enumerates directories in a provided path, and can do so recursively. **gfo** is an alias of **Get-Folders**.
+
+### Using Get-Folders
+
+* Running the function is simple:
+
+```
+Get-Folders
+```
+
+Alternatively, you can use the alias **gfo**
+
+```
+gfo
+```
+
+### Parameters
+**gfo** contains a few parameters to enhance its functionality.
+
+#### **Directory**
+The path of the directory you wish to enumerate directories within.
+
+If *-Directory* is not specified, **gfo** uses the present working directory.
+
+#### **SuppressErrors**
+Suppresses access errors without any output. This parameter can be useful when working with directory structures containing folders you know you don't have access to.
+
+#### **Recurse**
+Instructs the function to recursively enumerate all subdirectories within the specified path.
+
+#### **NoSort**
+*-NoSort* instructs the function to bypass alphabetical/hierarchical sorting of the enumerated directories, and returns the directories in the order they were discovered.
+
+#### **IgnoreExclusions**
+By default, **gfo** filters out directory paths matching the following strings:
+
+* "filehistory"
+* "windows"
+* "recycle"
+* "@"
+
+Specifying *-IgnoreExclusions* will include directory paths with the strings listed above.
+
+#### **IncludeRoot**
+*-IncludeRoot* adds the "root" (*-Directory*) directory to the returned list of discovered directories/subdirectories.
+
+
+## **Get-Files**
+**Get-Files** is a function that enumerates enumerates files in a provided path. **gfi** is an alias of **Get-Files**.
+
+**Note: gfo** does not operate recursively.
+
+### Using Get-Files
+
+* Running this function is also very simple:
+
+```
+Get-Files
+```
+
+Alternatively, you can use the alias **gfi**
+
+```
+gfi
+```
+
+### Parameters
+**gfi** contains a handful of parameters to enhance its functionality.
+
+#### **Directory**
+The path of the directory you wish to enumerate the files within.
+
+If not specified, **gfi** uses the present working directory.
+
+#### **ExcludeFullPath**
+By default, **gfi** provides the full directory path of every file it discovers. When specifying **-ExcludeFullPath**, only the file names are returned.
+
+#### **Filter**
+Applies an inclusional ("matches") filter to the output. *-Filter* is a positional parameter (last position), and doesn't require being named.
+
+**Note:** *-Filter* only allows a single filter to be specified. If you'd like the multi-filter functionality (like **gea** provides), let me know and I'll include it.
+
+Here's an example of how to only show files of type ".txt" using the *-Filter* parameter:
+
+```
+gfi -Filter *.txt
+```
+
+
+#### **Recurse**
+Instructs the function to recursively enumerate all subdirectories within the specified path.
+
+#### **NoSort**
+*-NoSort* instructs the function to bypass alphabetical/hierarchical sorting of the enumerated directories, and returns the directories in the order they were discovered.
+
+#### **IgnoreExclusions**
+By default, **gfo** filters out directory paths matching the following strings:
+
+* "filehistory"
+* "windows"
+* "recycle"
+* "@"
+
+Specifying *-IgnoreExclusions* will include directory paths with the strings listed above.
+
+#### **IncludeRoot**
+*-IncludeRoot* adds the "root" (*-Directory*) directory to the returned list of discovered directories/subdirectories.
+
 
 
 ## Help
