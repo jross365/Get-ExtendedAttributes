@@ -163,7 +163,7 @@ In cases where there are a *large* number of files, the time it takes to query 5
 Thankfully, there's a clever solution to this problem.
 
 
-### Understanding the Helper File
+### Understanding It
 
 The Helper File is simply a JSON file called *exthelper.json*. It contains Keys (file extensions) and Values (applicable attributes for each file extension).
 
@@ -172,12 +172,12 @@ The Helper File is simply a JSON file called *exthelper.json*. It contains Keys 
 Instead of querying 500 attributes, when using the Helper File it will only query 30-40 (depending on the file type). This improves **gea**'s performance substantially.
 
 
-### Where to get the Helper File
+### Where To Get It
 
 I have included a Helper File with the module that contains 315 extensions. This was generated from files on my systems and storage, and works perfectly (for me).
 
 
-### How to use the Helper File
+### How To Use It
 
 * If present when importing the module, the path to the Helper File is automatically assigned to the variable *$HelperFile*:
 
@@ -192,7 +192,7 @@ Get-ExtendedAttributes -UseHelperFile -HelperFileName $HelperFile
 **Note:** 👷 I realize how redundant it is to have a switch and an input variable for a single purpose. I will simplify this in the future 👷
 
 
-### How much *does* it actually help?
+### Does It *Actually* Help?
 
 That's a fair question. Here's a test against 410 files:
 
@@ -207,7 +207,7 @@ That's a fair question. Here's a test against 410 files:
 That's a difference of **8 times** faster when using the Helper File!
 
 
-### How to make your own
+### How To Make It
 
 If you have a unique or specific set of file types that aren't included in the provided set, I have included a function to create your own Helper File (**New-AttrsHelperFile**)
 
@@ -216,7 +216,7 @@ Details on how to use this tool are outlined in the **Other Functions** section 
 # Other Functions
 If **gea** is the star of the show, then there's also a supporting cast. Without them, the show wouldn't be possible.
 
-This section briefly covers the other functions included in this Powershell module.
+This section covers the other functions included and available for use in this Powershell module.
 
 ## **Reinventing the Wheel?**
 When considering how to enumerate files and folders, I started with these three requirements.
