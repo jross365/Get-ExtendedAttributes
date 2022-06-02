@@ -995,7 +995,7 @@ Export-ModuleMember -Alias gfi
 [system.collections.arraylist]$SplitPath = ((Get-Command Get-Folders).Module).Path -split '\\'
 $SplitPath[$SplitPath.Count -1] = "exthelper.json"
 $HelperFile = $SplitPath -join '\'
-Remove-Variable $SplitPath -ErrorAction SilentlyContinue
+Remove-Variable SplitPath -ErrorAction SilentlyContinue
 
 If (Test-Path $HelperFile){
     

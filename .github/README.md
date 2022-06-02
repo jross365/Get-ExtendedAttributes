@@ -321,24 +321,32 @@ gfi -Filter *.txt
 ```
 
 
-#### **Recurse**
-Instructs the function to recursively enumerate all subdirectories within the specified path.
+## **Get-FileExtension**
+**Get-FileExtension** is a function that returns the file extension of a given file. 
 
-#### **NoSort**
-*-NoSort* instructs the function to bypass alphabetical/hierarchical sorting of the enumerated directories, and returns the directories in the order they were discovered.
 
-#### **IgnoreExclusions**
-By default, **gfo** filters out directory paths matching the following strings:
+### Using Get-Files
 
-* "filehistory"
-* "windows"
-* "recycle"
-* "@"
+* Running this function requires specifying the filename:
 
-Specifying *-IgnoreExclusions* will include directory paths with the strings listed above.
+```
+Get-FileExtension -FilePath D:\somefile.txt
 
-#### **IncludeRoot**
-*-IncludeRoot* adds the "root" (*-Directory*) directory to the returned list of discovered directories/subdirectories.
+.txt
+```
+
+However, the *actual* path doesn't matter. You can pass the function nonsense, and it'll return the perceived file extension:
+```
+Get-FileExtension asdfq234r3e2f.sql
+
+.sql
+```
+### Parameters
+**Get-FileExtension** has a single parameter:
+
+#### **FilePath**
+The name or path of the file.
+
 
 
 
