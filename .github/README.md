@@ -49,7 +49,7 @@ Import the module using the following command:
 Import-Module Get-ExtendedAttributes
 ```
 
-**Note:** The module exports the path of a "Helper File" as variable $HelperFile. This is used to *greatly* improve the speed and efficiency of **gea**. Details on how to use the helper file are explained below.
+**Note:** The module exports the path of a "Helper File" as variable $HelperFile. This is used to *greatly* improve the speed and efficiency. Details on how to use the helper file are explained in the **Helper File** below.
 
 
 ### Using Get-ExtendedAttributes
@@ -60,7 +60,7 @@ Import-Module Get-ExtendedAttributes
 Get-ExtendedAttributes
 ```
 
-Alternatively, you can use the alias **gea**
+Alternatively, you can use the alias:
 
 ```
 gea
@@ -242,7 +242,7 @@ This left no "*off-the-shelf*" options (that I'm aware of), and I didn't want to
 Get-Folders
 ```
 
-Alternatively, you can use the alias **gfo**
+Alternatively, you can use the alias:
 
 ```
 gfo
@@ -280,9 +280,9 @@ Specifying *-IgnoreExclusions* will include directory paths with the strings lis
 
 
 ## **Get-Files**
-**Get-Files** is a function that enumerates enumerates files in a provided path. **gfi** is an alias of **Get-Files**.
+**Get-Files** is a function that enumerates files in a specified path.
 
-**Note: gfo** does not operate recursively.
+**Note: Get-Files** does not operate recursively.
 
 ### Using Get-Files
 
@@ -292,7 +292,7 @@ Specifying *-IgnoreExclusions* will include directory paths with the strings lis
 Get-Files
 ```
 
-Alternatively, you can use the alias **gfi**
+Alternatively, you can use the alias:
 
 ```
 gfi
@@ -320,7 +320,6 @@ Here's an example of how to only show files of type ".txt" using the *-Filter* p
 gfi -Filter *.txt
 ```
 
-
 ## **Get-FileExtension**
 **Get-FileExtension** is a function that returns the file extension of a given file. 
 
@@ -347,6 +346,43 @@ Get-FileExtension asdfq234r3e2f.sql
 #### **FilePath**
 The name or path of the file.
 
+
+## **New-AttrsHelperFile**
+**New-AttrsHelperFile** is a function that analyzes CSV files with contents created by **gea** to generate a new Helper File.
+
+You may want to create a new helper file if your use-case for this module applies to files whose extensions aren't included in the provided *extHelper.json* file.
+
+### Notes and Recommendations
+These are some general thoughts on the best way to use **New-AttrsHelperFile**:
+
+* When running **gea** to generate the initial data, it's best to specify *-OmitEmptyFields* upfront. This will save a lot of time when re-analyzing the data.
+* When saving the **gea** output as a CSV, make sure you specify the **Export-Csv* cmdlet's *-NoTypeInformation* parameter.
+* You don't need a huge dataset of files in each CSV to generate a perfect *exthelper.json* file. 
+    * Consider hand-picking a small quantity of each file type that you think will have the desired properties.
+* 
+
+
+### Using Get-Files
+
+* Running this function requires specifying the filename:
+
+```
+Get-FileExtension -FilePath D:\somefile.txt
+
+.txt
+```
+
+However, the *actual* path doesn't matter. You can pass the function nonsense, and it'll return the perceived file extension:
+```
+Get-FileExtension asdfq234r3e2f.sql
+
+.sql
+```
+### Parameters
+**Get-FileExtension** has a single parameter:
+
+#### **FilePath**
+The name or path of the file.
 
 
 
