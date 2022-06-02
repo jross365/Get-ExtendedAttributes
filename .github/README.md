@@ -66,66 +66,6 @@ Alternatively, you can use the alias **gea**
 gea
 ```
 
-
-## The Helper File
-
-**gea** is very quick when run without additional parameters for one or a small number of files.
-
-In cases where there are a *large* number of files, the time it takes to query 500 attributes can cause **gea** to take a *very* long time to complete.
-
-Thankfully, there's a clever solution to this problem.
-
-
-### Understanding the Helper File
-
-The Helper File is simply a JSON file called *exthelper.json*. It contains Keys (file extensions) and Values (applicable attributes for each file extension).
-
-**gea** uses this file to limit the attribute retrievals to *only* attributes that are used by specific file types.
-
-Instead of querying 500 attributes, when using the Helper File it will only query 30-40 (depending on the file type). This improves **gea**'s performance substantially.
-
-
-### Where to get the Helper File
-
-I have included a Helper File with the module that contains 315 extensions. This was generated from files on my systems and storage, and works perfectly (for me).
-
-
-### How to use the Helper File
-
-* If present when importing the module, the path to the Helper File is automatically assigned to the variable *$HelperFile*:
-
-![Import-Module](/.github/images/import-module.png)
-
-* When running **gea**, use the following parameters to use the Helper File:
-
-```
-Get-ExtendedAttributes -UseHelperFile -HelperFileName $HelperFile
-```
-
-**Note:** 👷 I realize how redundant it is to have a switch and an input variable for a single purpose. I will simplify this in the future 👷
-
-
-### How much *does* the Helper File actually improve performance?
-
-That's a fair question. Here's a test against 410 files:
-
-![HelperFile Speed](/.github/images/helperspeed.png)
-
-
-| Without Helper| With Helper   |
-| ------------- | ------------- |
-| 83 seconds    | 10 seconds    |
-| 4.94 files/sec| 41 files/sec  |
-
-That's a difference of **8 times** faster when using the Helper File!
-
-
-### How to make your own Helper File
-
-If you have a unique or specific set of file types that aren't included in the provided set, I have included a function to create your own Helper File (**New-AttrsHelperFile**)
-
-Details on how to use this tool are written in a section below.
-
 ## Parameters
 
 **gea** contains many parameters to enhance its functionality and applicability.
@@ -213,6 +153,65 @@ Reports all "Access Denied" errors to the console after the resultant data has b
 ### **ErrorOutFile**
 Instructs the function to send errors to a designated text file instead of to the console. 
 
+
+## The Helper File
+
+**gea** is very quick when run without additional parameters for one or a small number of files.
+
+In cases where there are a *large* number of files, the time it takes to query 500 attributes can cause **gea** to take a *very* long time to complete.
+
+Thankfully, there's a clever solution to this problem.
+
+
+### Understanding the Helper File
+
+The Helper File is simply a JSON file called *exthelper.json*. It contains Keys (file extensions) and Values (applicable attributes for each file extension).
+
+**gea** uses this file to limit the attribute retrievals to *only* attributes that are used by specific file types.
+
+Instead of querying 500 attributes, when using the Helper File it will only query 30-40 (depending on the file type). This improves **gea**'s performance substantially.
+
+
+### Where to get the Helper File
+
+I have included a Helper File with the module that contains 315 extensions. This was generated from files on my systems and storage, and works perfectly (for me).
+
+
+### How to use the Helper File
+
+* If present when importing the module, the path to the Helper File is automatically assigned to the variable *$HelperFile*:
+
+![Import-Module](/.github/images/import-module.png)
+
+* When running **gea**, use the following parameters to use the Helper File:
+
+```
+Get-ExtendedAttributes -UseHelperFile -HelperFileName $HelperFile
+```
+
+**Note:** 👷 I realize how redundant it is to have a switch and an input variable for a single purpose. I will simplify this in the future 👷
+
+
+### How much *does* the Helper File actually improve performance?
+
+That's a fair question. Here's a test against 410 files:
+
+![HelperFile Speed](/.github/images/helperspeed.png)
+
+
+| Without Helper| With Helper   |
+| ------------- | ------------- |
+| 83 seconds    | 10 seconds    |
+| 4.94 files/sec| 41 files/sec  |
+
+That's a difference of **8 times** faster when using the Helper File!
+
+
+### How to make your own Helper File
+
+If you have a unique or specific set of file types that aren't included in the provided set, I have included a function to create your own Helper File (**New-AttrsHelperFile**)
+
+Details on how to use this tool are written in a section below.
 
 # Other Module Functions
 If **gea** is the star of the show, then there's also a supporting cast. Without them, the show wouldn't be possible.
