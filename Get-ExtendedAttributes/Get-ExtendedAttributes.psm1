@@ -77,8 +77,6 @@ $Dirs = New-Object System.Collections.ArrayList
 
 $EnumDirs = {[System.IO.Directory]::EnumerateDirectories("$Dir","*","TopDirectory")}
 
-
-
 #region Validate parameters
 If ($Directory.Length -eq 0 -or $Directory -eq $null){$Directory = (Get-Location).ProviderPath}
 Else {If (!(Test-Path $Directory)){throw "$Directory is not a valid path"}}
@@ -92,8 +90,6 @@ If (!($IgnoreExclusions.IsPresent)){
 }
 
 Else {$NotTheseNames = {$_ -ne $null}} #Have to put something here, or the .Where statements break
-
-If ($IncludeRoot.IsPresent){$Dirs.Add($Directory) | out-null}
 
 #endregion
 
@@ -135,6 +131,8 @@ If ($Recurse.IsPresent){
     Until ($DirCount -eq 0)
 
             } #Close If $Recurse.IsPresent
+
+If ($IncludeRoot.IsPresent){$Dirs.Add($Directory) | out-null}
 
 switch ($NoSort.IsPresent){
 
