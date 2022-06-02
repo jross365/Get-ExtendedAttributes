@@ -136,6 +136,8 @@ The path of the directory or file you wish to retrieve extended attributes from.
 
 This parameter is positional (*position 0*), and can be used without being named.
 
+If unspecified, *-Path* uses the present working directory.
+
 
 ### **Recurse**
 In cases where *-Path* is a directory, *-Recurse* will enumerate all subfolders and files within the provided path.
@@ -217,20 +219,18 @@ If **gea** is the star of the show, then there's also a supporting cast. Without
 
 This section briefly covers the other functions included in this Powershell module.
 
-### **Get-Folders**
-*Get-Folders* (and *Get-Files*) was written to fulfill three requirements:
+### **Rationale**
+* I wrote **Get-Folders** and **Get-Files** to fulfill three requirements:
 
 * Fast enumeration and simple/flat output of files and folders
 * Avoid enumerating attributes for the sake of efficiency
-    * These two requirements rule out *Get-ChildItem*
+*  Maintain all code within native Powershell/.NET Framework 
 
-*  Maintain all code within native Powershell/.Net Framework 
-    * This rules out the cmd.exe "*dir*" command, which is fast but would require a wrapper function.
+The first two requirements rule out *Get-ChildItem*, because **gci** is notoriously slow as a result and enumerates attributes, which I was explicitly trying to avoid.
+
+The last requirement rules out the cmd.exe "*dir.exe*" command, which is very fast but would require a wrapper function.
 
 
-
-
-* To avoid the command line "*dir*" command, which is very fast but isn't 
 
 ## Help
 
