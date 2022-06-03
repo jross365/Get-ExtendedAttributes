@@ -218,14 +218,82 @@ If **gea** is the star of the show, then there's also a supporting cast. Without
 
 This section covers the other functions included and available for use in this Powershell module.
 
-## **Reinventing the Wheel?**
+
+## **New-AttrsHelperFile**
+A function that analyzes CSV files with contents created by **gea** to generate a new Helper File.
+
+You may want to create a new helper file if your use-case for this module applies to files whose extensions aren't included in the provided *extHelper.json* file.
+
+![New-AttrsHelperFile](/.github/images/new-attrshelperfile.png)
+
+### Considerations
+These are some notes and recommendations for using **New-AttrsHelperFile**:
+
+* When running **gea** to generate the initial data, it's best to specify *-OmitEmptyFields* up-front (alternatively, *-Clean*). This will save a lot of time when re-analyzing the data.
+* When saving the **gea** output as a CSV, make sure you specify the **Export-Csv** cmdlet's *-NoTypeInformation* parameter.
+* You don't need a huge dataset of files in each CSV to generate a perfect *exthelper.json* file. 
+    * Consider hand-picking a small quantity of each file type that you think will have the desired properties.
+* You can use the existing *exthelper.json* file when running **gea** to generate a new Helper File.
+    * Eligible extension-attributes will transfer over after the new analysis is complete, saving you time on "known attributes".
+    * However, if any attributes were missed, those missed attributes will also be missing from the new file.
+* Expect the function's run-time to take **1-2 minutes per 1MB** of CSVs, depending on your CPU's single-core performance.
+
+
+### Using New-AttrsHelperFile
+
+* Suppose you've created a folder of representative files for the purpose of generating a new exthelper file, and a location for your resultant CSV file:
+```
+D:\RepFiles
+D:\AttrsFiles
+```
+
+* Import the **Get-ExtendedAttributes** module:
+```
+Import-Module Get-ExtendedAttributes
+```
+
+* Use **gea** to analyze your files:
+```
+$AttrData = gea -Path D:\RepFiles -Recurse -Write-Progress -Clean
+```
+
+* Save the file attribute data as a CSV:
+```
+$AttrData | Export-Csv D:\AttrsFiles\RepFiles.csv -NoTypeInformation
+```
+
+* Run **New-AttrsHelperFile** to generate the new *exthelper.json*
+```
+New-AttrsHelperFile -Folder D:\AttrsFiles -SaveAs D:\AttrsFiles\exthelper.json -WriteProgress
+```
+
+With the above parameters-set, **New-AttrsHelperFile** will display a progress bar. There is no console output after completion.
+
+
+### Parameters
+**New-AttrsHelperFile** has a small number of parameters:
+
+#### **-Folder**
+The path of the directory containing relevant CSV files. There is no default, and this parameter should be explicitly defined.
+
+#### **-SaveAs**
+The full file path to save the resultant .json as. There is no default, and this parameter should also be explicitly defined.
+
+#### **-WriteProgress**
+To support your mental health and welfare.
+
+Reports on the overall progress, the extension it's analyzing, the extension progress, and the file whose attributes its analyzing.
+
+
+## **Reinventing the Wheel:**
+### Why **gfo** and **gfi** Were Created
 When considering how to enumerate files and folders, I started with these three requirements.
 
 1. Faster enumeration and simple/flat output of files and folders
 2. Avoid enumerating attributes for the sake of efficiency
 3.  Maintain all code within native Powershell/.NET Framework 
 
-The first two requirements rule out *Get-ChildItem*, because **gci** is notoriously slow and enumerates attributes, which I was explicitly trying to avoid. And the last requirement rules out the cmd.exe "*dir.exe*" command, which is very fast but would require a wrapper function.
+The first two requirements rule out *Get-ChildItem*, because **gci** is notoriously slow and enumerates attributes, which I was explicitly trying to avoid. The last requirement rules out the cmd.exe "*dir.exe*" command, which is very fast but would require a wrapper function.
 
 This left no "*off-the-shelf*" options (that I'm aware of), and I didn't want to borrow someone else's code. So I wrote **Get-Folders** and **Get-Files**.
 
@@ -345,69 +413,6 @@ Get-FileExtension asdfq234r3e2f.sql
 The name or path of the file.
 
 
-## **New-AttrsHelperFile**
-A function that analyzes CSV files with contents created by **gea** to generate a new Helper File.
-
-You may want to create a new helper file if your use-case for this module applies to files whose extensions aren't included in the provided *extHelper.json* file.
-
-### Considerations
-These are some notes and recommendations for using **New-AttrsHelperFile**:
-
-* When running **gea** to generate the initial data, it's best to specify *-OmitEmptyFields* up-front (alternatively, *-Clean*). This will save a lot of time when re-analyzing the data.
-* When saving the **gea** output as a CSV, make sure you specify the **Export-Csv** cmdlet's *-NoTypeInformation* parameter.
-* You don't need a huge dataset of files in each CSV to generate a perfect *exthelper.json* file. 
-    * Consider hand-picking a small quantity of each file type that you think will have the desired properties.
-* You can use the existing *exthelper.json* file when running **gea** to generate a new Helper File.
-    * Eligible extension-attributes will transfer over after the new analysis is complete, saving you time on "known attributes".
-    * However, if any attributes were missed, those missed attributes will also be missing from the new file.
-* Expect the function's run-time to take **1-2 minutes per 1MB** of CSVs, depending on your CPU's single-core performance.
-
-
-### Using New-AttrsHelperFile
-
-* Suppose you've created a folder of representative files for the purpose of generating a new exthelper file, and a location for your resultant CSV file:
-```
-D:\RepFiles
-D:\AttrsFiles
-```
-
-* Import the **Get-ExtendedAttributes** module:
-```
-Import-Module Get-ExtendedAttributes
-```
-
-* Use **gea** to analyze your files:
-```
-$AttrData = gea -Path D:\RepFiles -Recurse -Write-Progress -Clean
-```
-
-* Save the file attribute data as a CSV:
-```
-$AttrData | Export-Csv D:\AttrsFiles\RepFiles.csv -NoTypeInformation
-```
-
-* Run **New-AttrsHelperFile** to generate the new *exthelper.json*
-```
-New-AttrsHelperFile -Folder D:\AttrsFiles -SaveAs D:\AttrsFiles\exthelper.json -WriteProgress
-```
-
-With the above parameters-set, **New-AttrsHelperFile** will display a progress bar. There is no console output after completion.
-
-
-### Parameters
-**New-AttrsHelperFile** has a small number of parameters:
-
-#### **-Folder**
-The path of the directory containing relevant CSV files. There is no default, and this parameter should be explicitly defined.
-
-#### **-SaveAs**
-The full file path to save the resultant .json as. There is no default, and this parameter should also be explicitly defined.
-
-#### **-WriteProgress**
-To support your mental health and welfare.
-
-Reports on the overall progress, the extension it's analyzing, the extension progress, and the file whose attributes its analyzing.
-
 
 ## Help
 Notes and comments regarding all things involving the word "help"
@@ -429,9 +434,9 @@ If you encounter a bug, please report it. Let me know exactly how you encountere
 
 ## Known Issues
 * Strange/faulty behavior when working with files in UserProfile directories (caused by NTUSER.DAT)
-* Some file attribute values obtained from internet or non-Windows sources contain odd characters (thin arrows)
-    * I'm not convinced this is a problem with the module, but a future "helper" function may help fix these instances.
-    * The char values are in the 8000s, so it's an easy problem to sanitize
+* Some file attribute values obtained from downloaded or non-Windows sources contain LRM (Left-to-Right Mark, Unicode 8206)
+    * This is easy to sanitize, but the simplest way (ConvertTo-Csv => -replace [char][int](8206) | ConvertFrom-Csv) may add significant overhead
+    * May add a [switch]$PreserveLRM switch to disable LRM sanitization
 * Fix **gfo** "trailing-slash" bug
     * This doesn't effect the module functionality, but it's an easy bug to squash
 
