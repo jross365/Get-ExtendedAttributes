@@ -6,9 +6,6 @@ Get-ExtendedAttributes is a Powershell module for accessing the extended attribu
 
 This module provides functionality similar to the *Get-ChildItem* cmdlet. Instead of basic file attributes, however, **gea** enumerates and returns attributes not easily exposed to Powershell.
 
-The primary function in this Powershell module is also named **Get-ExtendedAttributes**.
-All future references to **gea** refer to the Powershell function that bears the same name.
-
 **These attributes include:**
 
 * **Video** (image/sound/combined bitrates, length, resolution, encoding, etc)
