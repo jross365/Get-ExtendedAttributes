@@ -6,6 +6,9 @@ Get-ExtendedAttributes is a Powershell module for accessing the extended attribu
 
 This module provides functionality similar to the *Get-ChildItem* cmdlet. Instead of basic file attributes, however, **gea** enumerates and returns attributes not easily exposed to Powershell.
 
+The primary function in this Powershell module is also named **Get-ExtendedAttributes**.
+All future references to **gea** refer to the Powershell function that bears the same name.
+
 **These attributes include:**
 
 * **Video** (image/sound/combined bitrates, length, resolution, encoding, etc)
@@ -220,7 +223,7 @@ This section covers the other functions included and available for use in this P
 
 
 ## **New-AttrsHelperFile**
-A function that analyzes CSV files with contents created by **gea** to generate a new Helper File.
+Analyzes CSV files with contents created by **gea** to generate a new Helper File.
 
 You may want to create a new helper file if your use-case for this module applies to files whose extensions aren't included in the provided *extHelper.json* file.
 
@@ -298,7 +301,7 @@ The first two requirements rule out *Get-ChildItem*, because **gci** is notoriou
 This left no "*off-the-shelf*" options (that I'm aware of), and I didn't want to borrow someone else's code. So I wrote **Get-Folders** and **Get-Files**.
 
 ## **Get-Folders** (gfo)
-A function that enumerates directories in a provided path, and can do so recursively.
+Enumerates directories in a provided path, and can do so recursively.
 
 ### Using Get-Folders
 
@@ -346,7 +349,7 @@ Adds the "root" (*-Directory*) directory to the returned list of discovered dire
 
 
 ## **Get-Files** (gfi)
-A function that enumerates files in a specified path.
+Enumerates files in a specified path.
 
 **Note: Get-Files** does not operate recursively.
 
@@ -387,7 +390,7 @@ gfi -Filter *.txt
 ```
 
 ## **Get-FileExtension**
-A function that returns the file extension of a given file. 
+Returns the file extension of a given file. 
 
 
 ### Using Get-FileExtension
