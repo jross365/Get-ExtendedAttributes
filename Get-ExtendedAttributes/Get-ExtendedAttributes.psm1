@@ -326,8 +326,7 @@ Function Get-ExtendedAttributes {
         [Parameter(Mandatory=$False,Position=0)] [string]$Path=((Get-Location).ProviderPath), 
         [Parameter(Mandatory=$False)] [switch]$Recurse,
         [Parameter(Mandatory=$False)] [switch]$WriteProgress,
-        [Parameter(ParameterSetName='HelperFile',Mandatory=$False)][Alias('UseHelper')] [switch]$UseHelperFile,
-        [Parameter(ParameterSetName='HelperFile',Mandatory=$False)][Alias('HelperFile')] [string]$HelperFilename="exthelper.json",
+        [Parameter(Mandatory=$False)][Alias('HF')] [string]$HelperFile,
         [Parameter(Mandatory=$False)] [array]$Exclude,
         [Parameter(Mandatory=$False)] [array]$Include,
         [Parameter(Mandatory=$False)][Alias('Clean')] [switch]$OmitEmptyFields,
@@ -346,14 +345,18 @@ Function Get-ExtendedAttributes {
     If (($FSOInfo).Attributes -match 'Directory'){$FSOType = "FSO-Directory"; $NameSpace = $Path}
     Else {$FSOType = "FSO-File"; $NameSpace = $FSOInfo.Directory.FullName}
 
-    If ($UseHelperFile.IsPresent){
+    If ($HelperFile.Length -gt 0){ write-verbose "Helper File detected" -Verbose
     
-        Try {$JSON = Get-Content $HelperFilename -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop}
-        Catch {throw "Helper file $HelperFilename is not valid"}
+        Try {$JSON = Get-Content $HelperFile -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop}
+        Catch {throw "Helper file $HelperFile is not valid"}
     
-        If (($JSON[0].psobject.Properties.Name -join ',') -ne "Extension,Attrs"){throw "$HelperFilename does not contain the expected properties: Extension, Attrs"}
+        If (($JSON[0].psobject.Properties.Name -join ',') -ne "Extension,Attrs"){throw "$HelperFile does not contain the expected properties: Extension, Attrs"}
+
+        $UseHelperFile = $true
     }
-    
+    Else {$UseHelperFile -eq $false}
+
+
     If ($ReportAccessErrors.IsPresent -and $ErrorOutFile.Length -gt 0){
         
         Switch ((Test-Path $ErrorOutFile)){
@@ -432,7 +435,7 @@ Function Get-ExtendedAttributes {
     #endregion 
     
     #region Import Helper File into Helper Hash Table:
-    If ($UseHelperFile.IsPresent){
+    If ($UseHelperFile -eq $true){
         $HelperHash = @{}
     
         $JSON.ForEach({
@@ -532,7 +535,7 @@ Function Get-ExtendedAttributes {
             
                 $Object = New-Object System.Object
             
-                Switch ($UseHelperFile.IsPresent){
+                Switch ($UseHelperFile){
             
                 $True {
             
