@@ -84,6 +84,8 @@ $EnumDirs = {[System.IO.Directory]::EnumerateDirectories("$Dir","*","TopDirector
 If ($Directory.Length -eq 0 -or $Directory -eq $null){$Directory = (Get-Location).ProviderPath}
 Else {If (!(Test-Path $Directory)){throw "$Directory is not a valid path"}}
 
+$Directory = $Directory.TrimEnd('\')
+
 If (!($IgnoreExclusions.IsPresent)){
     
     If ($Directory -match $Exclusions){throw "Path $Directory contains an excluded string. Please use the -IgnoreExclusions parameter"}
@@ -303,6 +305,9 @@ If specified, access errors encountered during enumeration ("Access denied") wil
 .PARAMETER ErrorOutFile
 If "-ReportAccessErrors" is specified, this parameter is optional. Writes encountered access errors to the specified file name.
 
+.PARAMETER PreserveLRM
+If specified, bypasses removal of Unicode 8206 from the enumerated data. 
+
 .INPUTS
 None. You cannot pipe objects to Get-ExtendedAttributes.
 
@@ -328,7 +333,8 @@ Function Get-ExtendedAttributes {
         [Parameter(Mandatory=$False)] [array]$Include,
         [Parameter(Mandatory=$False)][Alias('Clean')] [switch]$OmitEmptyFields,
         [Parameter(Mandatory=$False)] [switch]$ReportAccessErrors,
-        [Parameter(Mandatory=$False)] [string]$ErrorOutFile
+        [Parameter(Mandatory=$False)] [string]$ErrorOutFile,
+        [Parameter(Mandatory=$False)] [switch]$PreserveLRM
     )
     
     begin {
@@ -700,6 +706,12 @@ Function Get-ExtendedAttributes {
     
     #endregion
     
+    #region If $PreserveLRM isn't Present
+
+    If (!($PreserveLRM.IsPresent)){$Results = ($Results | Convertto-csv -NoTypeInformation) -replace "$([char]8206)" | convertfrom-csv}
+
+    #endregion
+
     return $Results
     
     } #Close End
