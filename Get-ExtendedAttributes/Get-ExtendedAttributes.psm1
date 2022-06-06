@@ -284,11 +284,8 @@ If specified, recursively enumerate files in all subdirectories nested in the ro
 .PARAMETER WriteProgress
 If specified, will show the progress of file attributes enumeration with a progress bar.
 
-.PARAMETER UseHelperFile
-If specified, instructs function to use a "helper file" to speed up attributes enumeration.
-
-.PARAMETER HelperFileName
-If "-UseHelperFile" is specified, this parameter is mandatory. The full path of the helper file (JSON).
+.PARAMETER HelperFile
+If specified, informs the function of the "helper file" path that speeds up attributes enumeration.
 
 .PARAMETER Exclude
 If specified, applies an exclusionary filter to files or folders. Comma-separate strings for multiple exclusions.
@@ -326,7 +323,7 @@ Function Get-ExtendedAttributes {
         [Parameter(Mandatory=$False,Position=0)] [string]$Path=((Get-Location).ProviderPath), 
         [Parameter(Mandatory=$False)] [switch]$Recurse,
         [Parameter(Mandatory=$False)] [switch]$WriteProgress,
-        [Parameter(Mandatory=$False)][Alias('HF')] [string]$HelperFile,
+        [Parameter(Mandatory=$False)][ValidateScript({Test-Path $_})] [Alias('HF')] [string]$HelperFile,
         [Parameter(Mandatory=$False)] [array]$Exclude,
         [Parameter(Mandatory=$False)] [array]$Include,
         [Parameter(Mandatory=$False)][Alias('Clean')] [switch]$OmitEmptyFields,
@@ -345,7 +342,7 @@ Function Get-ExtendedAttributes {
     If (($FSOInfo).Attributes -match 'Directory'){$FSOType = "FSO-Directory"; $NameSpace = $Path}
     Else {$FSOType = "FSO-File"; $NameSpace = $FSOInfo.Directory.FullName}
 
-    If ($HelperFile.Length -gt 0){ write-verbose "Helper File detected" -Verbose
+    If ($HelperFile.Length -gt 0){
     
         Try {$JSON = Get-Content $HelperFile -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop}
         Catch {throw "Helper file $HelperFile is not valid"}
@@ -436,7 +433,7 @@ Function Get-ExtendedAttributes {
     
     #region Import Helper File into Helper Hash Table:
     If ($UseHelperFile -eq $true){
-        $HelperHash = @{}
+        $HelperHash = @{};
     
         $JSON.ForEach({
                         

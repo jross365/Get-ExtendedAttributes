@@ -89,15 +89,10 @@ Displays a progress bar to support your mental health and welfare.
 The progress bar reports which file it's enumerating attributes for, and displays the overall file progress.
 
 
-### **-UseHelperFile**
-Instructs the function to use a Helper File.
-
-Details about what a Helper File is and how to use it are written in the **Helper File** section below.
-
-### **-HelperFileName**
+### **-HelperFile**
 Provides the function with the path of the Helper File to use.
 
-**Note:** *-UserHelperFile* and *-HelperFileName* will be consolidated into a single parameter in the future (*soon!*).
+Details about what a Helper File is and how to use it are written in the **Helper File** section below.
 
 
 ### **-Exclude**
@@ -163,7 +158,7 @@ In cases where there are a *large* number of files, the time it takes to query 5
 Thankfully, there's a clever solution to this problem.
 
 
-### Understanding It
+### Understanding The Helper File
 
 The Helper File is simply a JSON file called *exthelper.json*. It contains Keys (file extensions) and Values (applicable attributes for each file extension).
 
@@ -186,11 +181,8 @@ I have included a Helper File with the module that contains 315 extensions. This
 * When running **gea**, use the following parameters to use the Helper File:
 
 ```
-Get-ExtendedAttributes -UseHelperFile -HelperFileName $HelperFile
+Get-ExtendedAttributes -HelperFile $HelperFile
 ```
-
-**Note:** 👷 I realize how redundant it is to have a switch and an input variable for a single purpose. I will simplify this in the future 👷
-
 
 ### Does It *Actually* Help?
 
@@ -443,7 +435,7 @@ If you encounter a bug, please report it. Let me know exactly how you encountere
 ## To-Dos:
 This is a list of enhancements and improvements on my agenda:
 
-* Reduce **gea** "Helper File" parameters to a single parameter
+* ~~Reduce **gea** "Helper File" parameters to a single parameter~~ (06/06/2022)
 * Optimize/rewrite the supporting code behind the *-OmitEmptyFields* parameter
     * I need to figure out the fastest way to isolate unique, unused properties
 * Write some "example scripts" to demo the module
