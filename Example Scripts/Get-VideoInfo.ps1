@@ -53,9 +53,6 @@ $geaParams = @{
 Try {$VideoFiles = (gea @geaParams).Where({$_.Kind -eq 'Video'})}
 catch {throw "The provided parameters aren't correct: $($geaParams.GetEnumerator() | Out-String)"}
 
-#Remove those pesky, weird "tall arrow" characters ([char][int]8206):
-$VideoFiles = (($VideoFiles | Convertto-csv -NoTypeInformation) -replace "$([char]8206)" | convertfrom-csv) | Select-Object $VideoFields
-
 #Preserve our field names, and get rid of the expressions
 $VideoFields = $VideoFiles[0].psobject.Properties.Name
 

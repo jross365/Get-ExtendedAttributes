@@ -89,15 +89,10 @@ Displays a progress bar to support your mental health and welfare.
 The progress bar reports which file it's enumerating attributes for, and displays the overall file progress.
 
 
-### **-UseHelperFile**
-Instructs the function to use a Helper File.
-
-Details about what a Helper File is and how to use it are written in the **Helper File** section below.
-
-### **-HelperFileName**
+### **-HelperFile**
 Provides the function with the path of the Helper File to use.
 
-**Note:** *-UserHelperFile* and *-HelperFileName* will be consolidated into a single parameter in the future (*soon!*).
+Details about what a Helper File is and how to use it are written in the **Helper File** section below.
 
 
 ### **-Exclude**
@@ -122,7 +117,7 @@ Also as with *-Exclude*, *-Include* does not respect asterisks.
 
 
 ### **-OmitEmptyFields**
-Instructs the function to remove all columns in the resultant data which do not contain any values. 
+Instructs the function to remove all columns in the resultant data which do not contain any values. *-Clean* is an alias of *-OmitEmptyFields*.
 
 For example, a set of values that looks like this:
 
@@ -140,7 +135,6 @@ Would be reduced to these fields:
 | Jake  |         | no@ip.org     |
 |       | 3rd ave.| yep@nope.com  |
 
-**Note**: *-Clean* is an alias of *-OmitEmptyFields*.
 
 This operation can take a lot of time, depending on how many files and specified attributes reside in the dataset.
 
@@ -151,7 +145,14 @@ As with attribute lookups, the Helper File also reduces the number of possible e
 Reports all "Access Denied" errors to the console after the resultant data has been processed. Error reporting does not impact enumeration against files that were accessible.
 
 ### **-ErrorOutFile**
-Instructs the function to send errors to a designated text file instead of to the console. 
+Instructs the function to send errors to a designated text file instead of to the console.
+
+### **-PreserveLRM**
+Skips filtering/replacing Unicode character 8206 (Left-Right Mark) from the dataset.
+
+This parameter is recommended when **not** anticipating media files and executables, and will slightly improve run-time.
+
+If media files or executables *are** anticipated, **don't** specify this parameter to ensure the resultant data is plainly readable and exportable.
 
 
 ## The Helper File
@@ -163,7 +164,7 @@ In cases where there are a *large* number of files, the time it takes to query 5
 Thankfully, there's a clever solution to this problem.
 
 
-### Understanding It
+### Understanding The Helper File
 
 The Helper File is simply a JSON file called *exthelper.json*. It contains Keys (file extensions) and Values (applicable attributes for each file extension).
 
@@ -186,11 +187,8 @@ I have included a Helper File with the module that contains 315 extensions. This
 * When running **gea**, use the following parameters to use the Helper File:
 
 ```
-Get-ExtendedAttributes -UseHelperFile -HelperFileName $HelperFile
+Get-ExtendedAttributes -HelperFile $HelperFile
 ```
-
-**Note:** 👷 I realize how redundant it is to have a switch and an input variable for a single purpose. I will simplify this in the future 👷
-
 
 ### Does It *Actually* Help?
 
@@ -400,7 +398,7 @@ Get-FileExtension -FilePath D:\somefile.txt
 .txt
 ```
 
-However, the *actual* path doesn't matter. You can pass the function nonsense, and it will return the perceived file extension:
+However, the *actual* path (or the file's existence) doesn't matter. You can pass the function nonsense, and it will return the perceived file extension:
 ```
 Get-FileExtension asdfq234r3e2f.sql
 
@@ -434,16 +432,16 @@ If you encounter a bug, please report it. Let me know exactly how you encountere
 
 ## Known Issues
 * Strange/faulty behavior when working with files in UserProfile directories (caused by NTUSER.DAT)
-* Some file attribute values obtained from downloaded or non-Windows sources contain LRM (Left-to-Right Mark, Unicode 8206)
-    * This is easy to sanitize, but the simplest way (ConvertTo-Csv => -replace [char][int](8206) | ConvertFrom-Csv) may add significant overhead
-    * May add a [switch]$PreserveLRM switch to disable LRM sanitization
-* Fix **gfo** "trailing-slash" bug
-    * This doesn't effect the module functionality, but it's an easy bug to squash
+* ~~Some file attribute values obtained from downloaded or non-Windows sources contain LRM (Left-to-Right Mark, Unicode 8206)~~ (06/06/2022)
+    * ~~This is easy to sanitize, but the simplest way (ConvertTo-Csv => -replace [char][int](8206) | ConvertFrom-Csv) may add significant overhead~~
+    * ~~May add a [switch]$PreserveLRM switch to disable LRM sanitization~~
+* ~~Fix **gfo** "trailing-slash" bug~~ (06/06/2022)
+    * ~~This doesn't effect the module functionality, but it's an easy bug to squash~~
 
 ## To-Dos:
 This is a list of enhancements and improvements on my agenda:
 
-* Reduce **gea** "Helper File" parameters to a single parameter
+* ~~Reduce **gea** "Helper File" parameters to a single parameter~~ (06/06/2022)
 * Optimize/rewrite the supporting code behind the *-OmitEmptyFields* parameter
     * I need to figure out the fastest way to isolate unique, unused properties
 * Write some "example scripts" to demo the module

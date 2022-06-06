@@ -84,6 +84,8 @@ $EnumDirs = {[System.IO.Directory]::EnumerateDirectories("$Dir","*","TopDirector
 If ($Directory.Length -eq 0 -or $Directory -eq $null){$Directory = (Get-Location).ProviderPath}
 Else {If (!(Test-Path $Directory)){throw "$Directory is not a valid path"}}
 
+$Directory = $Directory.TrimEnd('\')
+
 If (!($IgnoreExclusions.IsPresent)){
     
     If ($Directory -match $Exclusions){throw "Path $Directory contains an excluded string. Please use the -IgnoreExclusions parameter"}
@@ -284,11 +286,8 @@ If specified, recursively enumerate files in all subdirectories nested in the ro
 .PARAMETER WriteProgress
 If specified, will show the progress of file attributes enumeration with a progress bar.
 
-.PARAMETER UseHelperFile
-If specified, instructs function to use a "helper file" to speed up attributes enumeration.
-
-.PARAMETER HelperFileName
-If "-UseHelperFile" is specified, this parameter is mandatory. The full path of the helper file (JSON).
+.PARAMETER HelperFile
+If specified, informs the function of the "helper file" path that speeds up attributes enumeration.
 
 .PARAMETER Exclude
 If specified, applies an exclusionary filter to files or folders. Comma-separate strings for multiple exclusions.
@@ -305,6 +304,9 @@ If specified, access errors encountered during enumeration ("Access denied") wil
 
 .PARAMETER ErrorOutFile
 If "-ReportAccessErrors" is specified, this parameter is optional. Writes encountered access errors to the specified file name.
+
+.PARAMETER PreserveLRM
+If specified, bypasses removal of Unicode 8206 from the enumerated data. 
 
 .INPUTS
 None. You cannot pipe objects to Get-ExtendedAttributes.
@@ -326,13 +328,13 @@ Function Get-ExtendedAttributes {
         [Parameter(Mandatory=$False,Position=0)] [string]$Path=((Get-Location).ProviderPath), 
         [Parameter(Mandatory=$False)] [switch]$Recurse,
         [Parameter(Mandatory=$False)] [switch]$WriteProgress,
-        [Parameter(ParameterSetName='HelperFile',Mandatory=$False)][Alias('UseHelper')] [switch]$UseHelperFile,
-        [Parameter(ParameterSetName='HelperFile',Mandatory=$False)][Alias('HelperFile')] [string]$HelperFilename="exthelper.json",
+        [Parameter(Mandatory=$False)][ValidateScript({Test-Path $_})] [Alias('HF')] [string]$HelperFile,
         [Parameter(Mandatory=$False)] [array]$Exclude,
         [Parameter(Mandatory=$False)] [array]$Include,
         [Parameter(Mandatory=$False)][Alias('Clean')] [switch]$OmitEmptyFields,
         [Parameter(Mandatory=$False)] [switch]$ReportAccessErrors,
-        [Parameter(Mandatory=$False)] [string]$ErrorOutFile
+        [Parameter(Mandatory=$False)] [string]$ErrorOutFile,
+        [Parameter(Mandatory=$False)] [switch]$PreserveLRM
     )
     
     begin {
@@ -346,14 +348,18 @@ Function Get-ExtendedAttributes {
     If (($FSOInfo).Attributes -match 'Directory'){$FSOType = "FSO-Directory"; $NameSpace = $Path}
     Else {$FSOType = "FSO-File"; $NameSpace = $FSOInfo.Directory.FullName}
 
-    If ($UseHelperFile.IsPresent){
+    If ($HelperFile.Length -gt 0){
     
-        Try {$JSON = Get-Content $HelperFilename -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop}
-        Catch {throw "Helper file $HelperFilename is not valid"}
+        Try {$JSON = Get-Content $HelperFile -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop}
+        Catch {throw "Helper file $HelperFile is not valid"}
     
-        If (($JSON[0].psobject.Properties.Name -join ',') -ne "Extension,Attrs"){throw "$HelperFilename does not contain the expected properties: Extension, Attrs"}
+        If (($JSON[0].psobject.Properties.Name -join ',') -ne "Extension,Attrs"){throw "$HelperFile does not contain the expected properties: Extension, Attrs"}
+
+        $UseHelperFile = $true
     }
-    
+    Else {$UseHelperFile -eq $false}
+
+
     If ($ReportAccessErrors.IsPresent -and $ErrorOutFile.Length -gt 0){
         
         Switch ((Test-Path $ErrorOutFile)){
@@ -432,8 +438,8 @@ Function Get-ExtendedAttributes {
     #endregion 
     
     #region Import Helper File into Helper Hash Table:
-    If ($UseHelperFile.IsPresent){
-        $HelperHash = @{}
+    If ($UseHelperFile -eq $true){
+        $HelperHash = @{};
     
         $JSON.ForEach({
                         
@@ -532,7 +538,7 @@ Function Get-ExtendedAttributes {
             
                 $Object = New-Object System.Object
             
-                Switch ($UseHelperFile.IsPresent){
+                Switch ($UseHelperFile){
             
                 $True {
             
@@ -700,6 +706,12 @@ Function Get-ExtendedAttributes {
     
     #endregion
     
+    #region If $PreserveLRM isn't Present
+
+    If (!($PreserveLRM.IsPresent)){$Results = ($Results | Convertto-csv -NoTypeInformation) -replace "$([char]8206)" | convertfrom-csv}
+
+    #endregion
+
     return $Results
     
     } #Close End
