@@ -443,9 +443,9 @@ This is a list of enhancements and improvements on my agenda:
 
 * ~~Reduce **gea** "Helper File" parameters to a single parameter~~ (06/06/2022)
 * Optimize/rewrite the supporting code behind the *-OmitEmptyFields* parameter
-    * I need to figure out the fastest way to isolate unique, unused properties
+    * Figure out the fastest way to isolate unique, unused properties
 * Write some "example scripts" to demo the module
-* Create a .psd1 for version tracking and Powershell/.NET CLR version enforcement
+* ~~Create a .psd1 for version tracking and Powershell/.NET CLR version enforcement~~ (06/06/2022)
 * Apply Powershell 7.1 **foreach -parallel** functionality
     * This code is badly bottlenecked by single-threaded performance
     * Parallelizing it would add a tremendous performance enhancement
