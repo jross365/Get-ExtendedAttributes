@@ -328,10 +328,10 @@ Function Get-ExtendedAttributes {
         [Parameter(Mandatory=$False,Position=0)] [string]$Path=((Get-Location).ProviderPath), 
         [Parameter(Mandatory=$False)] [switch]$Recurse,
         [Parameter(Mandatory=$False)] [switch]$WriteProgress,
-        [Parameter(Mandatory=$False)][ValidateScript({Test-Path $_})] [Alias('HF')] [string]$HelperFile,
+        [Parameter(Mandatory=$False)] [Alias('HF')] [string]$HelperFile,
         [Parameter(Mandatory=$False)] [array]$Exclude,
         [Parameter(Mandatory=$False)] [array]$Include,
-        [Parameter(Mandatory=$False)][Alias('Clean')] [switch]$OmitEmptyFields,
+        [Parameter(Mandatory=$False)] [Alias('Clean')] [switch]$OmitEmptyFields,
         [Parameter(Mandatory=$False)] [switch]$ReportAccessErrors,
         [Parameter(Mandatory=$False)] [string]$ErrorOutFile,
         [Parameter(Mandatory=$False)] [switch]$PreserveLRM
@@ -349,7 +349,9 @@ Function Get-ExtendedAttributes {
     Else {$FSOType = "FSO-File"; $NameSpace = $FSOInfo.Directory.FullName}
 
     If ($HelperFile.Length -gt 0){
-    
+
+        If ((Test-Path $HelperFile) -eq $false){throw "$HelperFile helper file path is invalid"}
+
         Try {$JSON = Get-Content $HelperFile -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop}
         Catch {throw "Helper file $HelperFile is not valid"}
     
@@ -357,8 +359,7 @@ Function Get-ExtendedAttributes {
 
         $UseHelperFile = $true
     }
-    Else {$UseHelperFile -eq $false}
-
+    Else {$UseHelperFile = $false}
 
     If ($ReportAccessErrors.IsPresent -and $ErrorOutFile.Length -gt 0){
         
