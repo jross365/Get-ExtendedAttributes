@@ -709,7 +709,7 @@ Function Get-ExtendedAttributes {
     
     #region If $PreserveLRM isn't Present
 
-    If (!($PreserveLRM.IsPresent)){$Results = ($Results | Convertto-csv -NoTypeInformation) -replace "$([char]8206)" | convertfrom-csv}
+    If (!($PreserveLRM.IsPresent)){$Results = ($Results | Convertto-csv -NoTypeInformation) -replace "$([char]8206)" -replace "$([char]8207)" | convertfrom-csv}
 
     #endregion
 
